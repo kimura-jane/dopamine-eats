@@ -4,344 +4,430 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ドーパミンイーツ 🛵</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, "Hiragino Sans", sans-serif;
-    background: #f5f5f5; color: #222; max-width: 480px; margin: 0 auto;
-    padding-bottom: 80px;
-  }
-  header {
-    background: #06c167; color: #fff; padding: 16px;
-    position: sticky; top: 0; z-index: 10;
-  }
-  header h1 { font-size: 20px; }
-  header p { font-size: 12px; opacity: 0.9; margin-top: 2px; }
-  .screen { display: none; padding: 16px; }
-  .screen.active { display: block; }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  body{font-family:-apple-system,"Hiragino Sans",sans-serif;background:#fff;color:#191919;
+    max-width:480px;margin:0 auto;padding-bottom:90px;}
+  header{background:#fff;padding:14px 16px;position:sticky;top:0;z-index:1000;border-bottom:1px solid #eee;}
+  .htop{display:flex;justify-content:space-between;align-items:center;}
+  .brand{font-size:20px;font-weight:800;color:#06c167;}
+  .badge{font-size:10px;background:#fff3e0;color:#e8590c;padding:3px 8px;border-radius:20px;font-weight:700;}
+  .deliver-to{font-size:12px;color:#666;margin-top:8px;cursor:pointer;}
+  .deliver-to b{color:#191919;}
+  .searchbar{margin-top:10px;background:#f2f2f2;border-radius:10px;padding:10px 12px;
+    font-size:13px;color:#999;display:flex;align-items:center;gap:8px;}
 
-  /* 店リスト */
-  .shop {
-    background: #fff; border-radius: 12px; overflow: hidden;
-    margin-bottom: 14px; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,.08);
-    transition: transform .1s;
-  }
-  .shop:active { transform: scale(.98); }
-  .shop .banner { height: 110px; display: flex; align-items: center;
-    justify-content: center; font-size: 48px; }
-  .shop .info { padding: 12px; }
-  .shop .name { font-weight: bold; font-size: 16px; }
-  .shop .meta { font-size: 12px; color: #777; margin-top: 4px; }
+  .screen{display:none;}
+  .screen.active{display:block;}
+  .pad{padding:16px;}
+  .back{background:none;border:none;color:#06c167;font-size:14px;cursor:pointer;
+    margin:12px 0;padding:0 16px;font-weight:600;}
+
+  /* 住所モーダル */
+  .addr-box{background:#fff;border-radius:14px;padding:18px;margin:16px;box-shadow:0 2px 12px rgba(0,0,0,.08);}
+  .addr-box label{font-size:14px;font-weight:700;display:block;margin-bottom:10px;}
+  .addr-box input{width:100%;padding:13px;border:1px solid #ddd;border-radius:10px;font-size:14px;}
+  .addr-box button{margin-top:12px;width:100%;background:#06c167;color:#fff;border:none;
+    padding:14px;border-radius:10px;font-weight:700;font-size:15px;cursor:pointer;}
+  .addr-status{font-size:12px;margin-top:10px;}
+
+  /* カテゴリ横スクロール */
+  .cats{display:flex;gap:10px;overflow-x:auto;padding:14px 16px;scrollbar-width:none;}
+  .cats::-webkit-scrollbar{display:none;}
+  .cat{flex:0 0 auto;text-align:center;font-size:12px;color:#444;cursor:pointer;}
+  .cat .ci{width:56px;height:56px;border-radius:50%;background:#f2f2f2;display:flex;
+    align-items:center;justify-content:center;font-size:26px;margin-bottom:4px;}
+  .cat.on .ci{background:#e7f8ef;outline:2px solid #06c167;}
+
+  .sec-title{font-size:18px;font-weight:800;padding:6px 16px 4px;}
+  .sec-sub{font-size:12px;color:#888;padding:0 16px 10px;}
+
+  /* 店カード */
+  .shop{margin:0 16px 18px;cursor:pointer;}
+  .shop:active{opacity:.85;}
+  .shop .img{height:150px;border-radius:14px;background-size:cover;background-position:center;
+    position:relative;background-color:#eee;}
+  .shop .promo{position:absolute;left:10px;top:10px;background:#06c167;color:#fff;
+    font-size:11px;font-weight:700;padding:4px 8px;border-radius:6px;}
+  .shop .fav{position:absolute;right:10px;top:10px;background:rgba(255,255,255,.9);
+    width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;}
+  .shop .nm{font-weight:700;font-size:16px;margin-top:8px;}
+  .shop .mt{font-size:12px;color:#666;margin-top:3px;display:flex;gap:8px;flex-wrap:wrap;}
+  .shop .mt .star{color:#191919;font-weight:700;}
 
   /* メニュー */
-  .back { background: none; border: none; color: #06c167;
-    font-size: 14px; cursor: pointer; margin-bottom: 12px; }
-  .menu-item {
-    background: #fff; border-radius: 10px; padding: 12px;
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 10px;
-  }
-  .menu-item .emoji { font-size: 32px; margin-right: 10px; }
-  .menu-item .left { display: flex; align-items: center; }
-  .menu-item .mname { font-weight: 600; font-size: 14px; }
-  .menu-item .price { font-size: 13px; color: #555; }
-  .addbtn {
-    background: #06c167; color: #fff; border: none; border-radius: 20px;
-    width: 32px; height: 32px; font-size: 20px; cursor: pointer;
-  }
+  .shop-hero{height:180px;background-size:cover;background-position:center;background-color:#eee;}
+  .shop-head{padding:14px 16px;border-bottom:8px solid #f2f2f2;}
+  .shop-head h2{font-size:22px;font-weight:800;}
+  .shop-head .mt{font-size:12px;color:#666;margin-top:6px;display:flex;gap:10px;flex-wrap:wrap;}
+  .menu-cat{font-size:16px;font-weight:800;padding:16px 16px 8px;}
+  .menu-item{display:flex;justify-content:space-between;gap:12px;padding:14px 16px;
+    border-bottom:1px solid #f2f2f2;cursor:pointer;}
+  .menu-item:active{background:#fafafa;}
+  .mi-info{flex:1;}
+  .mi-name{font-weight:700;font-size:15px;}
+  .mi-desc{font-size:12px;color:#777;margin-top:4px;line-height:1.5;}
+  .mi-price{font-size:14px;font-weight:700;margin-top:6px;}
+  .mi-img{width:96px;height:96px;border-radius:12px;background-size:cover;
+    background-position:center;flex:0 0 auto;position:relative;background-color:#eee;}
+  .mi-add{position:absolute;right:-6px;bottom:-6px;width:30px;height:30px;border-radius:50%;
+    background:#fff;border:1px solid #ddd;font-size:18px;font-weight:700;color:#06c167;
+    display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.15);}
 
-  /* カート下部バー */
-  .cartbar {
-    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-    width: 100%; max-width: 480px; background: #06c167; color: #fff;
-    padding: 16px; display: none; justify-content: space-between;
-    align-items: center; cursor: pointer; font-weight: bold;
-  }
-  .cartbar.show { display: flex; }
+  /* カートバー */
+  .cartbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;
+    max-width:480px;padding:12px 16px;display:none;z-index:1000;}
+  .cartbar.show{display:block;}
+  .cartbar .inner{background:#06c167;color:#fff;border-radius:12px;padding:15px 18px;
+    display:flex;justify-content:space-between;align-items:center;font-weight:700;
+    box-shadow:0 4px 14px rgba(6,193,103,.4);cursor:pointer;}
+  .cartbar .cnt{background:#fff;color:#06c167;border-radius:6px;padding:2px 8px;font-size:13px;}
 
   /* カート画面 */
-  .cart-line { background:#fff; padding:12px; border-radius:10px;
-    margin-bottom:8px; display:flex; justify-content:space-between; }
-  .total { font-size: 18px; font-weight: bold; margin: 16px 0; text-align:right; }
-  .order-btn {
-    background:#06c167; color:#fff; border:none; width:100%;
-    padding:16px; border-radius:12px; font-size:16px; font-weight:bold;
-    cursor:pointer;
-  }
-  .note { font-size:11px; color:#999; text-align:center; margin-top:10px; }
+  .cart-line{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;
+    border-bottom:1px solid #f2f2f2;}
+  .qty{display:flex;align-items:center;gap:12px;}
+  .qty button{width:28px;height:28px;border-radius:50%;border:1px solid #ddd;background:#fff;
+    font-size:16px;cursor:pointer;color:#06c167;font-weight:700;}
+  .coupon-box{margin:16px;background:#f7f7f7;border-radius:12px;padding:14px;}
+  .coupon-box label{font-size:13px;font-weight:700;}
+  .coupon-box select{width:100%;padding:11px;border:1px solid #ddd;border-radius:8px;
+    font-size:14px;margin-top:8px;background:#fff;}
+  .breakdown{padding:8px 16px;}
+  .price-row{display:flex;justify-content:space-between;font-size:14px;padding:5px 0;color:#444;}
+  .price-row.total{font-size:18px;font-weight:800;color:#191919;border-top:1px solid #eee;
+    margin-top:8px;padding-top:10px;}
+  .order-btn{margin:16px;width:calc(100% - 32px);background:#06c167;color:#fff;border:none;
+    padding:16px;border-radius:12px;font-size:16px;font-weight:800;cursor:pointer;}
+  .note{font-size:11px;color:#aaa;text-align:center;padding:0 16px 8px;}
+  .sin{background:#fff3e0;color:#e8590c;font-size:12px;font-weight:700;text-align:center;
+    padding:10px;margin:0 16px;border-radius:10px;}
 
-  /* 追跡画面 */
-  .map {
-    background: #d7ecd9; height: 180px; border-radius: 12px;
-    position: relative; overflow: hidden; margin-bottom: 16px;
-  }
-  .rider {
-    position: absolute; bottom: 20px; font-size: 36px;
-    transition: left 1s linear;
-  }
-  .house { position:absolute; right:20px; bottom:20px; font-size:32px; }
-  .steps { list-style:none; }
-  .steps li { padding:12px; background:#fff; border-radius:8px;
-    margin-bottom:8px; opacity:.4; font-size:14px; }
-  .steps li.done { opacity:1; font-weight:600; }
-  .steps li.done::before { content:"✅ "; }
-  .rider-card { background:#fff; border-radius:12px; padding:14px;
-    display:flex; align-items:center; margin-bottom:16px; }
-  .rider-card .ava { font-size:40px; margin-right:12px; }
-  .eta { font-size:22px; font-weight:bold; color:#06c167; text-align:center;
-    margin:12px 0; }
+  /* 追跡 */
+  #mapTrack{height:240px;}
+  .track-pad{padding:16px;}
+  .eta{font-size:24px;font-weight:800;color:#191919;text-align:center;margin:14px 0 4px;}
+  .eta-sub{font-size:12px;color:#888;text-align:center;margin-bottom:14px;}
+  .steps{list-style:none;margin-top:8px;}
+  .steps li{padding:13px;background:#f7f7f7;border-radius:10px;margin-bottom:8px;
+    opacity:.45;font-size:14px;}
+  .steps li.done{opacity:1;font-weight:700;background:#e7f8ef;}
+  .steps li.done::before{content:"✅ ";}
+  .rider-card{background:#fff;border:1px solid #eee;border-radius:14px;padding:14px;
+    display:flex;align-items:center;margin:16px 0;}
+  .rider-card .ava{font-size:40px;margin-right:12px;}
 
-  /* 紙吹雪 */
-  .confetti { position:fixed; top:-10px; font-size:20px; z-index:999;
-    animation: fall 2.5s linear forwards; }
-  @keyframes fall {
-    to { transform: translateY(110vh) rotate(540deg); opacity:0; }
-  }
+  .confetti{position:fixed;top:-10px;font-size:20px;z-index:9999;animation:fall 2.5s linear forwards;}
+  @keyframes fall{to{transform:translateY(110vh) rotate(540deg);opacity:0;}}
 </style>
 </head>
 <body>
 <header>
-  <h1>ドーパミンイーツ 🛵</h1>
-  <p>注文しても1円も減らない。ドーパミンだけ出る。</p>
+  <div class="htop">
+    <span class="brand">ドーパミンイーツ 🛵</span>
+    <span class="badge">請求 ¥0</span>
+  </div>
+  <div class="deliver-to" id="deliverTo" onclick="go('addr')">📍 お届け先を設定する ›</div>
+  <div class="searchbar">🔍 食べたいものを探す（けど頼まない）</div>
 </header>
 
-<!-- 店一覧 -->
-<div id="shops" class="screen active"></div>
+<!-- 住所入力 -->
+<div id="addr" class="screen active">
+  <div class="addr-box">
+    <label>お届け先の住所を入力してください 🏠</label>
+    <input id="addrInput" placeholder="例：東京都新宿区西新宿2-8-1" />
+    <button onclick="setAddress()">この住所に届ける</button>
+    <div class="addr-status" id="addrStatus"></div>
+    <p style="font-size:11px;color:#aaa;margin-top:12px;line-height:1.6;">
+      ※GPS・位置情報は取得しません。入力された住所から最寄り店舗を選びます。<br>
+      ※実際の料理は届きません。お金も一切かかりません。背徳感だけ持ち帰ってください。</p>
+  </div>
+</div>
+
+<!-- ホーム（店一覧） -->
+<div id="shops" class="screen">
+  <div class="cats" id="cats"></div>
+  <div class="sec-title">近くのお店 🛵</div>
+  <div class="sec-sub" id="shopsSub">最寄り順に表示中</div>
+  <div id="shopList"></div>
+</div>
 
 <!-- メニュー -->
 <div id="menu" class="screen">
+  <div class="shop-hero" id="shopHero"></div>
   <button class="back" onclick="go('shops')">← お店一覧へ</button>
-  <h2 id="shopName"></h2>
-  <p id="shopMeta" class="meta" style="color:#777;font-size:12px;margin:4px 0 16px;"></p>
+  <div class="shop-head">
+    <h2 id="shopName"></h2>
+    <div class="mt" id="shopMeta"></div>
+  </div>
   <div id="menuList"></div>
 </div>
 
 <!-- カート -->
 <div id="cart" class="screen">
   <button class="back" onclick="go('menu')">← メニューに戻る</button>
-  <h2>カート</h2>
-  <div id="cartItems" style="margin-top:12px;"></div>
-  <div class="total" id="cartTotal"></div>
+  <div class="sec-title">カート 🛒</div>
+  <div id="cartItems"></div>
+  <div class="coupon-box">
+    <label>クーポン 🎟️</label>
+    <select id="couponSelect" onchange="renderCart()">
+      <option value="0">クーポンを使わない</option>
+      <option value="300">初回限定 ¥300 OFF</option>
+      <option value="500">深夜割 ¥500 OFF</option>
+      <option value="free">送料無料クーポン</option>
+    </select>
+  </div>
+  <div class="breakdown" id="priceBreakdown"></div>
+  <div class="sin">💸 これだけ頼んでも、口座残高は1円も減りません</div>
   <button class="order-btn" onclick="placeOrder()">注文を確定する（無料）</button>
-  <p class="note">※実際の食べ物は届きません。お金も一切かかりません。</p>
+  <p class="note">背徳感はMAX、出費はゼロ。</p>
 </div>
 
 <!-- 追跡 -->
 <div id="track" class="screen">
-  <h2>配達状況 🛵</h2>
-  <div class="eta" id="eta"></div>
-  <div class="map">
-    <div class="rider" id="rider" style="left:10px;">🛵</div>
-    <div class="house">🏠</div>
-  </div>
-  <div class="rider-card">
-    <div class="ava" id="riderAva">🧑</div>
-    <div>
-      <div id="riderName" style="font-weight:bold;"></div>
-      <div id="riderRate" style="font-size:12px;color:#777;"></div>
+  <div id="mapTrack"></div>
+  <div class="track-pad">
+    <div class="eta" id="eta"></div>
+    <div class="eta-sub" id="etaSub"></div>
+    <div class="rider-card">
+      <div class="ava" id="riderAva">🧑</div>
+      <div>
+        <div id="riderName" style="font-weight:700;"></div>
+        <div id="riderRate" style="font-size:12px;color:#777;"></div>
+      </div>
     </div>
+    <ul class="steps" id="steps">
+      <li>注文を受け付けました</li>
+      <li>お店が調理を開始しました 🍳</li>
+      <li>配達員が料理を受け取りました 🛵</li>
+      <li>配達中です…もうすぐ到着 🏃</li>
+      <li>配達完了！…という設定です 🎉</li>
+    </ul>
+    <button class="order-btn" style="margin:16px 0 0;width:100%;" onclick="reset()">もう一度ドーパミンを浴びる</button>
   </div>
-  <ul class="steps" id="steps">
-    <li data-i="0">注文を受け付けました</li>
-    <li data-i="1">お店が調理を開始しました 🍳</li>
-    <li data-i="2">配達員が料理を受け取りました 🛵</li>
-    <li data-i="3">配達中です…もうすぐ到着 🏃</li>
-    <li data-i="4">配達完了！いただきます 🎉</li>
-  </ul>
-  <button class="order-btn" style="margin-top:16px;" onclick="reset()">もう一回ドーパミン浴びる</button>
 </div>
 
 <div class="cartbar" id="cartbar" onclick="go('cart')">
-  <span id="cartbarCount"></span>
-  <span>カートを見る →</span>
+  <div class="inner">
+    <span class="cnt" id="cartbarCount"></span>
+    <span>カートを見る</span>
+    <span id="cartbarPrice"></span>
+  </div>
 </div>
 
 <script>
-// ===== ダミーデータ =====
-const SHOPS = [
-  { name:"夜中のラーメン横丁", emoji:"🍜", bg:"#ffe0b2", time:"20-30分", rate:"4.8 (1,204)",
-    menu:[
-      {n:"濃厚豚骨ラーメン", e:"🍜", p:980},
-      {n:"味玉つけ麺", e:"🥢", p:1080},
-      {n:"餃子6個", e:"🥟", p:420},
-      {n:"チャーシュー丼", e:"🍚", p:550},
-    ]},
-  { name:"バーガーパラダイス", emoji:"🍔", bg:"#ffcdd2", time:"15-25分", rate:"4.6 (892)",
-    menu:[
-      {n:"ベーコンチーズバーガー", e:"🍔", p:890},
-      {n:"ポテトL", e:"🍟", p:380},
-      {n:"ナゲット10個", e:"🍗", p:520},
-      {n:"チョコシェイク", e:"🥤", p:420},
-    ]},
-  { name:"ピザ・ノッテ", emoji:"🍕", bg:"#fff9c4", time:"25-35分", rate:"4.7 (1,560)",
-    menu:[
-      {n:"マルゲリータ", e:"🍕", p:1480},
-      {n:"4種チーズ", e:"🧀", p:1680},
-      {n:"ガーリックブレッド", e:"🥖", p:480},
-      {n:"コーラ1.5L", e:"🥤", p:350},
-    ]},
-  { name:"スイーツ深夜便", emoji:"🍰", bg:"#f8bbd0", time:"20-30分", rate:"4.9 (2,031)",
-    menu:[
-      {n:"生チョコケーキ", e:"🍰", p:680},
-      {n:"いちごパフェ", e:"🍓", p:780},
-      {n:"焼きたてプリン", e:"🍮", p:450},
-      {n:"クレープ", e:"🥞", p:520},
-    ]},
+const IMG="https://foodish-api.com/images/";
+const SHOPS=[
+ {name:"夜中のラーメン横丁",cat:"ramen",hero:IMG+"pasta/pasta24.jpg",
+  promo:"深夜割クーポン対象",time:"20-30分",rate:"4.8",rev:"1,204",lat:35.6938,lng:139.7034,
+  menu:[
+   {n:"濃厚豚骨ラーメン",d:"12時間炊いた豚骨スープに極太麺。罪深い背脂たっぷり。",p:980,img:IMG+"pasta/pasta20.jpg"},
+   {n:"味玉つけ麺",d:"とろとろ味玉と魚介豚骨の濃厚つけ汁。〆まで背徳。",p:1080,img:IMG+"pasta/pasta12.jpg"},
+   {n:"焼き餃子6個",d:"パリッとジューシー。ビールが欲しくなる(けど頼めない)。",p:420,img:IMG+"dessert/dessert3.jpg"},
+   {n:"チャーシュー丼",d:"炙りチャーシューがご飯を覆い尽くす深夜の凶器。",p:550,img:IMG+"rice/rice5.jpg"}]},
+ {name:"バーガーパラダイス",cat:"burger",hero:IMG+"burger/burger30.jpg",
+  promo:"¥300 OFF対象",time:"15-25分",rate:"4.6",rev:"892",lat:35.6586,lng:139.7016,
+  menu:[
+   {n:"ベーコンチーズバーガー",d:"100%ビーフパティ2枚＋とろけるチェダー＋カリカリベーコン。",p:890,img:IMG+"burger/burger20.jpg"},
+   {n:"ポテトL",d:"揚げたてホクホク。塩は気持ち多め。深夜の正義。",p:380,img:IMG+"burger/burger41.jpg"},
+   {n:"スパイシーナゲット10個",d:"外はサクッ中はジューシー。3種ソース付き。",p:520,img:IMG+"burger/burger15.jpg"},
+   {n:"チョコシェイク",d:"濃厚すぎてストローが進まない背徳の一杯。",p:420,img:IMG+"dessert/dessert10.jpg"}]},
+ {name:"ピザ・ノッテ",cat:"pizza",hero:IMG+"pizza/pizza40.jpg",
+  promo:"送料無料対象",time:"25-35分",rate:"4.7",rev:"1,560",lat:35.7295,lng:139.7109,
+  menu:[
+   {n:"マルゲリータ",d:"自家製モッツァレラとバジル。薪窯で焼いた本格ナポリ。",p:1480,img:IMG+"pizza/pizza20.jpg"},
+   {n:"4種チーズ",d:"ゴルゴンゾーラ・モッツァレラ・パルメザン・チェダー。蜂蜜付き。",p:1680,img:IMG+"pizza/pizza11.jpg"},
+   {n:"ガーリックブレッド",d:"にんにくバターたっぷり。明日のことは考えない。",p:480,img:IMG+"pizza/pizza5.jpg"},
+   {n:"コーラ1.5L",d:"キンキンに冷えてます。ピザの相棒。",p:350,img:IMG+"dessert/dessert15.jpg"}]},
+ {name:"スイーツ深夜便",cat:"sweets",hero:IMG+"dessert/dessert20.jpg",
+  promo:"新規¥300 OFF",time:"20-30分",rate:"4.9",rev:"2,031",lat:35.6705,lng:139.7649,
+  menu:[
+   {n:"生チョコケーキ",d:"口どけ濃厚。深夜に食べる背徳の王様。",p:680,img:IMG+"dessert/dessert5.jpg"},
+   {n:"いちごパフェ",d:"生クリームとアイスと苺の暴力。罪の味。",p:780,img:IMG+"dessert/dessert8.jpg"},
+   {n:"焼きたてプリン",d:"ほろ苦カラメルととろける卵。背徳の定番。",p:450,img:IMG+"dessert/dessert12.jpg"},
+   {n:"いちごクレープ",d:"もちもち生地にたっぷりクリーム。",p:520,img:IMG+"dessert/dessert18.jpg"}]},
 ];
-const RIDERS = [
-  {name:"タナカ ケンジ", ava:"🧑", rate:"⭐ 4.9 ・ 配達3,200回"},
-  {name:"スズキ ミサキ", ava:"👩", rate:"⭐ 4.8 ・ 配達1,870回"},
-  {name:"サトウ リク",  ava:"🧔", rate:"⭐ 5.0 ・ 配達5,540回"},
-];
+const CATS=[{k:"all",e:"🍽️",l:"すべて"},{k:"ramen",e:"🍜",l:"ラーメン"},{k:"burger",e:"🍔",l:"バーガー"},
+ {k:"pizza",e:"🍕",l:"ピザ"},{k:"sweets",e:"🍰",l:"スイーツ"}];
+const RIDERS=[{name:"タナカ ケンジ",ava:"🧑",rate:"⭐ 4.9 ・ 配達3,200回"},
+ {name:"スズキ ミサキ",ava:"👩",rate:"⭐ 4.8 ・ 配達1,870回"},
+ {name:"サトウ リク",ava:"🧔",rate:"⭐ 5.0 ・ 配達5,540回"}];
 
-let cart = [];
-let currentShop = null;
+let cart=[],currentShop=null,home=null,curCat="all";
 
-// ===== 画面遷移 =====
+function distKm(a,b){const R=6371,t=x=>x*Math.PI/180;
+ const dLa=t(b.lat-a.lat),dLn=t(b.lng-a.lng);
+ const s=Math.sin(dLa/2)**2+Math.cos(t(a.lat))*Math.cos(t(b.lat))*Math.sin(dLn/2)**2;
+ return R*2*Math.atan2(Math.sqrt(s),Math.sqrt(1-s));}
+function deliveryFee(km){return Math.min(800,Math.max(250,Math.round(km*150/10)*10));}
+
 function go(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0,0);
+ if(id==='cart')renderCart();
+ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+ window.scrollTo(0,0);
 }
 
-// ===== 店一覧描画 =====
+async function setAddress(){
+ const q=document.getElementById('addrInput').value.trim();
+ const st=document.getElementById('addrStatus');
+ if(!q){st.textContent="住所を入力してね";st.style.color="#c33";return;}
+ st.textContent="住所を確認中…";st.style.color="#777";
+ try{
+  const url=`https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=jp&q=${encodeURIComponent(q)}`;
+  const res=await fetch(url,{headers:{'Accept-Language':'ja'}});
+  const d=await res.json();
+  if(!d.length){st.textContent="住所が見つかりませんでした。もう少し詳しく入力してね。";st.style.color="#c33";return;}
+  home={lat:parseFloat(d[0].lat),lng:parseFloat(d[0].lon),addr:q};
+  document.getElementById('deliverTo').innerHTML=`📍 お届け先：<b>${q}</b> ›`;
+  renderCats();renderShops();go('shops');
+ }catch(e){st.textContent="通信エラー。少し待って再度お試しください。";st.style.color="#c33";}
+}
+
+function renderCats(){
+ document.getElementById('cats').innerHTML=CATS.map(c=>`
+  <div class="cat ${c.k===curCat?'on':''}" onclick="selCat('${c.k}')">
+   <div class="ci">${c.e}</div><div>${c.l}</div></div>`).join('');
+}
+function selCat(k){curCat=k;renderCats();renderShops();}
+
 function renderShops(){
-  const el = document.getElementById('shops');
-  el.innerHTML = SHOPS.map((s,i)=>`
-    <div class="shop" onclick="openShop(${i})">
-      <div class="banner" style="background:${s.bg}">${s.emoji}</div>
-      <div class="info">
-        <div class="name">${s.name}</div>
-        <div class="meta">⭐ ${s.rate} ・ ${s.time}</div>
-      </div>
-    </div>`).join('');
+ let list=SHOPS.map((s,i)=>({s,i})).filter(o=>curCat==='all'||o.s.cat===curCat);
+ if(home){list.forEach(o=>o.km=distKm(home,o.s));list.sort((a,b)=>a.km-b.km);}
+ document.getElementById('shopsSub').textContent=home?`📍 ${home.addr} から最寄り順`:'最寄り順に表示中';
+ document.getElementById('shopList').innerHTML=list.map(o=>`
+  <div class="shop" onclick="openShop(${o.i})">
+   <div class="img" style="background-image:url('${o.s.hero}')">
+    <span class="promo">${o.s.promo}</span><span class="fav">🤍</span></div>
+   <div class="nm">${o.s.name}</div>
+   <div class="mt"><span class="star">⭐ ${o.s.rate}</span><span>(${o.s.rev}件)</span>
+    <span>・ ${o.s.time}</span>${home?`<span>・ 📍${o.km.toFixed(1)}km</span><span>・ 配達料¥${deliveryFee(o.km)}</span>`:''}</div>
+  </div>`).join('');
 }
 
 function openShop(i){
-  currentShop = SHOPS[i];
-  document.getElementById('shopName').textContent = currentShop.name;
-  document.getElementById('shopMeta').textContent = `⭐ ${currentShop.rate} ・ ${currentShop.time}`;
-  document.getElementById('menuList').innerHTML = currentShop.menu.map((m,j)=>`
-    <div class="menu-item">
-      <div class="left">
-        <span class="emoji">${m.e}</span>
-        <div>
-          <div class="mname">${m.n}</div>
-          <div class="price">¥${m.p}</div>
-        </div>
-      </div>
-      <button class="addbtn" onclick="addToCart(${j})">＋</button>
-    </div>`).join('');
-  go('menu');
+ currentShop=SHOPS[i];currentShop._km=home?distKm(home,currentShop):2;
+ document.getElementById('shopHero').style.backgroundImage=`url('${currentShop.hero}')`;
+ document.getElementById('shopName').textContent=currentShop.name;
+ document.getElementById('shopMeta').innerHTML=
+  `<span class="star">⭐ ${currentShop.rate} (${currentShop.rev}件)</span><span>・ ${currentShop.time}</span>
+   <span>・ 📍${currentShop._km.toFixed(1)}km</span><span>・ 配達料¥${deliveryFee(currentShop._km)}</span>`;
+ document.getElementById('menuList').innerHTML=`<div class="menu-cat">人気メニュー 🔥</div>`+
+  currentShop.menu.map((m,j)=>`
+  <div class="menu-item" onclick="addToCart(${j})">
+   <div class="mi-info"><div class="mi-name">${m.n}</div>
+    <div class="mi-desc">${m.d}</div><div class="mi-price">¥${m.p}</div></div>
+   <div class="mi-img" style="background-image:url('${m.img}')"><div class="mi-add">＋</div></div>
+  </div>`).join('');
+ go('menu');
 }
 
 function addToCart(j){
-  const m = currentShop.menu[j];
-  const found = cart.find(c=>c.n===m.n);
-  if(found){ found.q++; } else { cart.push({...m, q:1}); }
-  updateCartBar();
-  // ミニ演出
-  burst(1);
+ const m=currentShop.menu[j];
+ const f=cart.find(c=>c.n===m.n);
+ if(f)f.q++;else cart.push({...m,q:1,shop:currentShop.name});
+ updateCartBar();burst(1);
 }
-
+function changeQty(name,d){
+ const it=cart.find(c=>c.n===name);if(!it)return;
+ it.q+=d;if(it.q<=0)cart=cart.filter(c=>c.n!==name);
+ updateCartBar();renderCart();
+}
+function calcTotal(){
+ const subtotal=cart.reduce((a,c)=>a+c.p*c.q,0);
+ const km=currentShop?currentShop._km:2;
+ const fee=deliveryFee(km);
+ const cv=document.getElementById('couponSelect')?document.getElementById('couponSelect').value:"0";
+ let discount=0,feeAfter=fee;
+ if(cv==='free')feeAfter=0;else discount=parseInt(cv)||0;
+ const service=Math.round(subtotal*0.05);
+ let total=subtotal+feeAfter+service-discount;if(total<0)total=0;
+ return{subtotal,fee,feeAfter,service,discount,total,km};
+}
 function updateCartBar(){
-  const count = cart.reduce((a,c)=>a+c.q,0);
-  const bar = document.getElementById('cartbar');
-  if(count>0){
-    bar.classList.add('show');
-    document.getElementById('cartbarCount').textContent = `🛒 ${count}点`;
-  } else {
-    bar.classList.remove('show');
-  }
+ const count=cart.reduce((a,c)=>a+c.q,0);
+ const bar=document.getElementById('cartbar');
+ if(count>0){bar.classList.add('show');
+  document.getElementById('cartbarCount').textContent=count;
+  document.getElementById('cartbarPrice').textContent=`¥${calcTotal().total.toLocaleString()}`;
+ }else bar.classList.remove('show');
 }
 
-// ===== カート描画 =====
 function renderCart(){
-  const el = document.getElementById('cartItems');
-  if(cart.length===0){ el.innerHTML = "<p>カートは空です</p>"; }
-  else {
-    el.innerHTML = cart.map(c=>`
-      <div class="cart-line">
-        <span>${c.e} ${c.n} × ${c.q}</span>
-        <span>¥${c.p*c.q}</span>
-      </div>`).join('');
-  }
-  const total = cart.reduce((a,c)=>a+c.p*c.q,0);
-  document.getElementById('cartTotal').textContent = `合計 ¥${total}（請求 ¥0）`;
+ const el=document.getElementById('cartItems');
+ if(cart.length===0){el.innerHTML="<p style='padding:16px;color:#888;'>カートは空です</p>";}
+ else el.innerHTML=cart.map(c=>`
+  <div class="cart-line">
+   <div><div style="font-weight:700;">${c.n}</div>
+    <div style="font-size:12px;color:#888;">¥${c.p} ・ ${c.shop}</div></div>
+   <div class="qty"><button onclick="changeQty('${c.n}',-1)">−</button>
+    <span>${c.q}</span><button onclick="changeQty('${c.n}',1)">＋</button></div>
+  </div>`).join('');
+ const t=calcTotal();
+ document.getElementById('priceBreakdown').innerHTML=`
+  <div class="price-row"><span>商品小計</span><span>¥${t.subtotal.toLocaleString()}</span></div>
+  <div class="price-row"><span>配達料（${t.km.toFixed(1)}km）</span><span>${t.feeAfter===0?'<s style="color:#aaa;">¥'+t.fee+'</s> ¥0':'¥'+t.fee}</span></div>
+  <div class="price-row"><span>サービス料</span><span>¥${t.service.toLocaleString()}</span></div>
+  ${t.discount?`<div class="price-row" style="color:#06c167;"><span>クーポン割引</span><span>-¥${t.discount}</span></div>`:''}
+  <div class="price-row total"><span>合計</span><span>¥${t.total.toLocaleString()} <small style="color:#06c167;">（請求¥0）</small></span></div>`;
 }
 
-// go() を拡張：カート画面に入るとき描画
-const _go = go;
-go = function(id){
-  if(id==='cart') renderCart();
-  _go(id);
-};
-
-// ===== 注文確定 =====
 function placeOrder(){
-  if(cart.length===0){ alert("カートが空だよ！"); return; }
-  burst(60); // 紙吹雪ドバッ
-  // ランダム配達員
-  const r = RIDERS[Math.floor(Math.random()*RIDERS.length)];
-  document.getElementById('riderName').textContent = r.name;
-  document.getElementById('riderAva').textContent = r.ava;
-  document.getElementById('riderRate').textContent = r.rate;
-  go('track');
-  startTracking();
+ if(cart.length===0){alert("カートが空だよ！");return;}
+ burst(60);
+ const r=RIDERS[Math.floor(Math.random()*RIDERS.length)];
+ document.getElementById('riderName').textContent=r.name;
+ document.getElementById('riderAva').textContent=r.ava;
+ document.getElementById('riderRate').textContent=r.rate;
+ go('track');startTracking();
 }
 
-// ===== 追跡アニメ =====
-let trackTimer = null;
+let map=null,riderMarker=null,trackTimer=null;
 function startTracking(){
-  const steps = document.querySelectorAll('#steps li');
-  steps.forEach(s=>s.classList.remove('done'));
-  const rider = document.getElementById('rider');
-  const eta = document.getElementById('eta');
-  let i = 0;
-  let minutes = 18;
-  eta.textContent = `到着まで約 ${minutes} 分`;
-  rider.style.left = "10px";
-
-  clearInterval(trackTimer);
-  trackTimer = setInterval(()=>{
-    if(i < steps.length){
-      steps[i].classList.add('done');
-      // 配達員を右に動かす
-      const pct = 10 + (i/(steps.length-1)) * 75;
-      rider.style.left = pct + "%";
-      i++;
-      minutes = Math.max(0, minutes - 4);
-      eta.textContent = i>=steps.length ? "到着しました！🎉" : `到着まで約 ${minutes} 分`;
-      if(i>=steps.length){ clearInterval(trackTimer); burst(40); }
-    }
-  }, 1800);
-}
-
-// ===== 紙吹雪 =====
-function burst(n){
-  const chars = ["🎉","✨","🍔","🍕","🍜","🥳","💸","🛵"];
-  for(let k=0;k<n;k++){
-    const c = document.createElement('div');
-    c.className = 'confetti';
-    c.textContent = chars[Math.floor(Math.random()*chars.length)];
-    c.style.left = Math.random()*100 + "vw";
-    c.style.animationDelay = (Math.random()*0.4) + "s";
-    c.style.fontSize = (14 + Math.random()*20) + "px";
-    document.body.appendChild(c);
-    setTimeout(()=>c.remove(), 3000);
+ const steps=document.querySelectorAll('#steps li');
+ steps.forEach(s=>s.classList.remove('done'));
+ const eta=document.getElementById('eta'),etaSub=document.getElementById('etaSub');
+ if(map){map.remove();map=null;}
+ map=L.map('mapTrack');
+ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
+ const shopPt=[currentShop.lat,currentShop.lng],homePt=[home.lat,home.lng];
+ L.marker(shopPt).addTo(map).bindPopup('🏪 '+currentShop.name);
+ L.marker(homePt).addTo(map).bindPopup('🏠 お届け先');
+ const line=L.polyline([shopPt,homePt],{color:'#06c167',weight:4,dashArray:'8'}).addTo(map);
+ map.fitBounds(line.getBounds().pad(0.3));
+ riderMarker=L.marker(shopPt,{icon:L.divIcon({html:'🛵',className:'',iconSize:[30,30]})}).addTo(map);
+ let i=0,minutes=Math.max(8,Math.round(currentShop._km*4)+10);
+ eta.textContent=`到着まで約 ${minutes} 分`;etaSub.textContent=`${currentShop.name} が調理を始めます`;
+ clearInterval(trackTimer);
+ trackTimer=setInterval(()=>{
+  if(i<steps.length){
+   steps[i].classList.add('done');
+   const p=i/(steps.length-1);
+   riderMarker.setLatLng([currentShop.lat+(home.lat-currentShop.lat)*p,currentShop.lng+(home.lng-currentShop.lng)*p]);
+   i++;minutes=Math.max(0,minutes-Math.ceil(minutes/2));
+   eta.textContent=i>=steps.length?"到着しました！🎉":`到着まで約 ${minutes} 分`;
+   etaSub.textContent=i>=steps.length?"…でも、何も届きません。背徳感だけどうぞ。":"配達員が向かっています";
+   if(i>=steps.length){clearInterval(trackTimer);burst(40);}
   }
+ },1800);
+ setTimeout(()=>map.invalidateSize(),200);
 }
 
-// ===== リセット =====
-function reset(){
-  cart = [];
-  currentShop = null;
-  updateCartBar();
-  go('shops');
+function burst(n){
+ const ch=["🎉","✨","🍔","🍕","🍜","🥳","💸","🛵"];
+ for(let k=0;k<n;k++){const c=document.createElement('div');c.className='confetti';
+  c.textContent=ch[Math.floor(Math.random()*ch.length)];
+  c.style.left=Math.random()*100+"vw";c.style.animationDelay=(Math.random()*0.4)+"s";
+  c.style.fontSize=(14+Math.random()*20)+"px";document.body.appendChild(c);
+  setTimeout(()=>c.remove(),3000);}
 }
+function reset(){cart=[];currentShop=null;
+ if(document.getElementById('couponSelect'))document.getElementById('couponSelect').value="0";
+ updateCartBar();go('shops');}
 
-// 初期化
-renderShops();
+renderCats();renderShops();
 </script>
 </body>
 </html>
