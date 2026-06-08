@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ドーパミンイーツ 🛵</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Hiragino Sans", sans-serif;
+    background: #f5f5f5; color: #222; max-width: 480px; margin: 0 auto;
+    padding-bottom: 80px;
+  }
+  header {
+    background: #06c167; color: #fff; padding: 16px;
+    position: sticky; top: 0; z-index: 10;
+  }
+  header h1 { font-size: 20px; }
+  header p { font-size: 12px; opacity: 0.9; margin-top: 2px; }
+  .screen { display: none; padding: 16px; }
+  .screen.active { display: block; }
+
+  /* 店リスト */
+  .shop {
+    background: #fff; border-radius: 12px; overflow: hidden;
+    margin-bottom: 14px; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    transition: transform .1s;
+  }
+  .shop:active { transform: scale(.98); }
+  .shop .banner { height: 110px; display: flex; align-items: center;
+    justify-content: center; font-size: 48px; }
+  .shop .info { padding: 12px; }
+  .shop .name { font-weight: bold; font-size: 16px; }
+  .shop .meta { font-size: 12px; color: #777; margin-top: 4px; }
+
+  /* メニュー */
+  .back { background: none; border: none; color: #06c167;
+    font-size: 14px; cursor: pointer; margin-bottom: 12px; }
+  .menu-item {
+    background: #fff; border-radius: 10px; padding: 12px;
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px;
+  }
+  .menu-item .emoji { font-size: 32px; margin-right: 10px; }
+  .menu-item .left { display: flex; align-items: center; }
+  .menu-item .mname { font-weight: 600; font-size: 14px; }
+  .menu-item .price { font-size: 13px; color: #555; }
+  .addbtn {
+    background: #06c167; color: #fff; border: none; border-radius: 20px;
+    width: 32px; height: 32px; font-size: 20px; cursor: pointer;
+  }
+
+  /* カート下部バー */
+  .cartbar {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 480px; background: #06c167; color: #fff;
+    padding: 16px; display: none; justify-content: space-between;
+    align-items: center; cursor: pointer; font-weight: bold;
+  }
+  .cartbar.show { display: flex; }
+
+  /* カート画面 */
+  .cart-line { background:#fff; padding:12px; border-radius:10px;
+    margin-bottom:8px; display:flex; justify-content:space-between; }
+  .total { font-size: 18px; font-weight: bold; margin: 16px 0; text-align:right; }
+  .order-btn {
+    background:#06c167; color:#fff; border:none; width:100%;
+    padding:16px; border-radius:12px; font-size:16px; font-weight:bold;
+    cursor:pointer;
+  }
+  .note { font-size:11px; color:#999; text-align:center; margin-top:10px; }
+
+  /* 追跡画面 */
+  .map {
+    background: #d7ecd9; height: 180px; border-radius: 12px;
+    position: relative; overflow: hidden; margin-bottom: 16px;
+  }
+  .rider {
+    position: absolute; bottom: 20px; font-size: 36px;
+    transition: left 1s linear;
+  }
+  .house { position:absolute; right:20px; bottom:20px; font-size:32px; }
+  .steps { list-style:none; }
+  .steps li { padding:12px; background:#fff; border-radius:8px;
+    margin-bottom:8px; opacity:.4; font-size:14px; }
+  .steps li.done { opacity:1; font-weight:600; }
+  .steps li.done::before { content:"✅ "; }
+  .rider-card { background:#fff; border-radius:12px; padding:14px;
+    display:flex; align-items:center; margin-bottom:16px; }
+  .rider-card .ava { font-size:40px; margin-right:12px; }
+  .eta { font-size:22px; font-weight:bold; color:#06c167; text-align:center;
+    margin:12px 0; }
+
+  /* 紙吹雪 */
+  .confetti { position:fixed; top:-10px; font-size:20px; z-index:999;
+    animation: fall 2.5s linear forwards; }
+  @keyframes fall {
+    to { transform: translateY(110vh) rotate(540deg); opacity:0; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>ドーパミンイーツ 🛵</h1>
+  <p>注文しても1円も減らない。ドーパミンだけ出る。</p>
+</header>
+
+<!-- 店一覧 -->
+<div id="shops" class="screen active"></div>
+
+<!-- メニュー -->
+<div id="menu" class="screen">
+  <button class="back" onclick="go('shops')">← お店一覧へ</button>
+  <h2 id="shopName"></h2>
+  <p id="shopMeta" class="meta" style="color:#777;font-size:12px;margin:4px 0 16px;"></p>
+  <div id="menuList"></div>
+</div>
+
+<!-- カート -->
+<div id="cart" class="screen">
+  <button class="back" onclick="go('menu')">← メニューに戻る</button>
+  <h2>カート</h2>
+  <div id="cartItems" style="margin-top:12px;"></div>
+  <div class="total" id="cartTotal"></div>
+  <button class="order-btn" onclick="placeOrder()">注文を確定する（無料）</button>
+  <p class="note">※実際の食べ物は届きません。お金も一切かかりません。</p>
+</div>
+
+<!-- 追跡 -->
+<div id="track" class="screen">
+  <h2>配達状況 🛵</h2>
+  <div class="eta" id="eta"></div>
+  <div class="map">
+    <div class="rider" id="rider" style="left:10px;">🛵</div>
+    <div class="house">🏠</div>
+  </div>
+  <div class="rider-card">
+    <div class="ava" id="riderAva">🧑</div>
+    <div>
+      <div id="riderName" style="font-weight:bold;"></div>
+      <div id="riderRate" style="font-size:12px;color:#777;"></div>
+    </div>
+  </div>
+  <ul class="steps" id="steps">
+    <li data-i="0">注文を受け付けました</li>
+    <li data-i="1">お店が調理を開始しました 🍳</li>
+    <li data-i="2">配達員が料理を受け取りました 🛵</li>
+    <li data-i="3">配達中です…もうすぐ到着 🏃</li>
+    <li data-i="4">配達完了！いただきます 🎉</li>
+  </ul>
+  <button class="order-btn" style="margin-top:16px;" onclick="reset()">もう一回ドーパミン浴びる</button>
+</div>
+
+<div class="cartbar" id="cartbar" onclick="go('cart')">
+  <span id="cartbarCount"></span>
+  <span>カートを見る →</span>
+</div>
+
+<script>
+// ===== ダミーデータ =====
+const SHOPS = [
+  { name:"夜中のラーメン横丁", emoji:"🍜", bg:"#ffe0b2", time:"20-30分", rate:"4.8 (1,204)",
+    menu:[
+      {n:"濃厚豚骨ラーメン", e:"🍜", p:980},
+      {n:"味玉つけ麺", e:"🥢", p:1080},
+      {n:"餃子6個", e:"🥟", p:420},
+      {n:"チャーシュー丼", e:"🍚", p:550},
+    ]},
+  { name:"バーガーパラダイス", emoji:"🍔", bg:"#ffcdd2", time:"15-25分", rate:"4.6 (892)",
+    menu:[
+      {n:"ベーコンチーズバーガー", e:"🍔", p:890},
+      {n:"ポテトL", e:"🍟", p:380},
+      {n:"ナゲット10個", e:"🍗", p:520},
+      {n:"チョコシェイク", e:"🥤", p:420},
+    ]},
+  { name:"ピザ・ノッテ", emoji:"🍕", bg:"#fff9c4", time:"25-35分", rate:"4.7 (1,560)",
+    menu:[
+      {n:"マルゲリータ", e:"🍕", p:1480},
+      {n:"4種チーズ", e:"🧀", p:1680},
+      {n:"ガーリックブレッド", e:"🥖", p:480},
+      {n:"コーラ1.5L", e:"🥤", p:350},
+    ]},
+  { name:"スイーツ深夜便", emoji:"🍰", bg:"#f8bbd0", time:"20-30分", rate:"4.9 (2,031)",
+    menu:[
+      {n:"生チョコケーキ", e:"🍰", p:680},
+      {n:"いちごパフェ", e:"🍓", p:780},
+      {n:"焼きたてプリン", e:"🍮", p:450},
+      {n:"クレープ", e:"🥞", p:520},
+    ]},
+];
+const RIDERS = [
+  {name:"タナカ ケンジ", ava:"🧑", rate:"⭐ 4.9 ・ 配達3,200回"},
+  {name:"スズキ ミサキ", ava:"👩", rate:"⭐ 4.8 ・ 配達1,870回"},
+  {name:"サトウ リク",  ava:"🧔", rate:"⭐ 5.0 ・ 配達5,540回"},
+];
+
+let cart = [];
+let currentShop = null;
+
+// ===== 画面遷移 =====
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ===== 店一覧描画 =====
+function renderShops(){
+  const el = document.getElementById('shops');
+  el.innerHTML = SHOPS.map((s,i)=>`
+    <div class="shop" onclick="openShop(${i})">
+      <div class="banner" style="background:${s.bg}">${s.emoji}</div>
+      <div class="info">
+        <div class="name">${s.name}</div>
+        <div class="meta">⭐ ${s.rate} ・ ${s.time}</div>
+      </div>
+    </div>`).join('');
+}
+
+function openShop(i){
+  currentShop = SHOPS[i];
+  document.getElementById('shopName').textContent = currentShop.name;
+  document.getElementById('shopMeta').textContent = `⭐ ${currentShop.rate} ・ ${currentShop.time}`;
+  document.getElementById('menuList').innerHTML = currentShop.menu.map((m,j)=>`
+    <div class="menu-item">
+      <div class="left">
+        <span class="emoji">${m.e}</span>
+        <div>
+          <div class="mname">${m.n}</div>
+          <div class="price">¥${m.p}</div>
+        </div>
+      </div>
+      <button class="addbtn" onclick="addToCart(${j})">＋</button>
+    </div>`).join('');
+  go('menu');
+}
+
+function addToCart(j){
+  const m = currentShop.menu[j];
+  const found = cart.find(c=>c.n===m.n);
+  if(found){ found.q++; } else { cart.push({...m, q:1}); }
+  updateCartBar();
+  // ミニ演出
+  burst(1);
+}
+
+function updateCartBar(){
+  const count = cart.reduce((a,c)=>a+c.q,0);
+  const bar = document.getElementById('cartbar');
+  if(count>0){
+    bar.classList.add('show');
+    document.getElementById('cartbarCount').textContent = `🛒 ${count}点`;
+  } else {
+    bar.classList.remove('show');
+  }
+}
+
+// ===== カート描画 =====
+function renderCart(){
+  const el = document.getElementById('cartItems');
+  if(cart.length===0){ el.innerHTML = "<p>カートは空です</p>"; }
+  else {
+    el.innerHTML = cart.map(c=>`
+      <div class="cart-line">
+        <span>${c.e} ${c.n} × ${c.q}</span>
+        <span>¥${c.p*c.q}</span>
+      </div>`).join('');
+  }
+  const total = cart.reduce((a,c)=>a+c.p*c.q,0);
+  document.getElementById('cartTotal').textContent = `合計 ¥${total}（請求 ¥0）`;
+}
+
+// go() を拡張：カート画面に入るとき描画
+const _go = go;
+go = function(id){
+  if(id==='cart') renderCart();
+  _go(id);
+};
+
+// ===== 注文確定 =====
+function placeOrder(){
+  if(cart.length===0){ alert("カートが空だよ！"); return; }
+  burst(60); // 紙吹雪ドバッ
+  // ランダム配達員
+  const r = RIDERS[Math.floor(Math.random()*RIDERS.length)];
+  document.getElementById('riderName').textContent = r.name;
+  document.getElementById('riderAva').textContent = r.ava;
+  document.getElementById('riderRate').textContent = r.rate;
+  go('track');
+  startTracking();
+}
+
+// ===== 追跡アニメ =====
+let trackTimer = null;
+function startTracking(){
+  const steps = document.querySelectorAll('#steps li');
+  steps.forEach(s=>s.classList.remove('done'));
+  const rider = document.getElementById('rider');
+  const eta = document.getElementById('eta');
+  let i = 0;
+  let minutes = 18;
+  eta.textContent = `到着まで約 ${minutes} 分`;
+  rider.style.left = "10px";
+
+  clearInterval(trackTimer);
+  trackTimer = setInterval(()=>{
+    if(i < steps.length){
+      steps[i].classList.add('done');
+      // 配達員を右に動かす
+      const pct = 10 + (i/(steps.length-1)) * 75;
+      rider.style.left = pct + "%";
+      i++;
+      minutes = Math.max(0, minutes - 4);
+      eta.textContent = i>=steps.length ? "到着しました！🎉" : `到着まで約 ${minutes} 分`;
+      if(i>=steps.length){ clearInterval(trackTimer); burst(40); }
+    }
+  }, 1800);
+}
+
+// ===== 紙吹雪 =====
+function burst(n){
+  const chars = ["🎉","✨","🍔","🍕","🍜","🥳","💸","🛵"];
+  for(let k=0;k<n;k++){
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.textContent = chars[Math.floor(Math.random()*chars.length)];
+    c.style.left = Math.random()*100 + "vw";
+    c.style.animationDelay = (Math.random()*0.4) + "s";
+    c.style.fontSize = (14 + Math.random()*20) + "px";
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(), 3000);
+  }
+}
+
+// ===== リセット =====
+function reset(){
+  cart = [];
+  currentShop = null;
+  updateCartBar();
+  go('shops');
+}
+
+// 初期化
+renderShops();
+</script>
+</body>
+</html>
