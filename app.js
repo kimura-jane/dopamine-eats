@@ -1,10 +1,10 @@
-/* ====== Supabase 設定（★あなたの値に置換★） ====== */
-const SUPABASE_URL = 'https://YOUR-PROJECT.supabase.co';
-const SUPABASE_KEY = 'YOUR_PUBLISHABLE_KEY';
+/* ====== Supabase 設定 ====== */
+const SUPABASE_URL = 'https://ovlpawzrjemolbzcdvvh.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_Uwhc7Oqn2RGDf2W4DQ0SvQ_ijHrwpmT';
 
 let sb = null;
 try {
-  if (window.supabase && SUPABASE_URL.indexOf('YOUR-PROJECT') === -1) {
+  if (window.supabase) {
     sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   }
 } catch (e) { console.warn('Supabase init failed', e); }
@@ -28,12 +28,14 @@ function go(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo(0,0);
+  if(id==='cart') renderCart();
 }
 
 /* ====== 状態 ====== */
 let HOME = {lat:35.6618, lng:139.7041};
 let currentShop = null;
 let cart = [];
+let activeCat = 'all';
 
 /* ====== 住所設定 ====== */
 async function setAddress(){
@@ -74,7 +76,6 @@ function deliveryFee(km){
 }
 
 /* ====== プロモ・カテゴリ・店舗描画 ====== */
-let activeCat = 'all';
 function renderPromos(){
   document.getElementById('promos').innerHTML = PROMOS.map(p=>
     `<div class="promo" style="background:${p.bg}"><h3>${p.h}</h3><p>${p.p}</p></div>`).join('');
@@ -188,16 +189,12 @@ function renderCart(){
   `;
 }
 
-/* 画面を cart にしたとき描画 */
-const _go = go;
-go = function(id){ _go(id); if(id==='cart') renderCart(); };
-
 /* ====== ガチャ判定 ====== */
 function isJomonHit(){
   const cats = cart.map(c=>c.cat);
-  if(cats.some(c=>FISH_CATS.includes(c))) return false;          // 寿司・魚介 → ハズレ確定
+  if(cats.some(c=>FISH_CATS.includes(c))) return false;               // 寿司・魚介 → ハズレ確定
   if(cats.some(c=>LUCKY_CATS.includes(c))) return Math.random()<1/10; // 家系・ピザ・バーガー → 1/10
-  return Math.random()<1/319;                                    // 通常 → 1/319
+  return Math.random()<1/319;                                         // 通常 → 1/319
 }
 
 /* ====== 注文 ====== */
@@ -206,7 +203,7 @@ function placeOrder(){
   if(!cart.length) return;
   lastHit = isJomonHit();
   startTracking(lastHit);
-  cart = [];               // ★カートを空にする
+  cart = [];               // カートを空にする
   updateCartbar();
   go('track');
   if(lastHit) showJackpot();
@@ -300,7 +297,7 @@ function burst(){
 async function registerJomon(){
   if(!sb) return;
   try{
-    const {data, error} = await sb.rpc('increment_jomon', {p_uuid: MY_UUID});
+    const {error} = await sb.rpc('increment_jomon', {p_uuid: MY_UUID});
     if(error){ console.warn(error); return; }
     await refreshCounter();
   }catch(e){ console.warn(e); }
@@ -314,7 +311,7 @@ async function refreshCounter(){
     if(error || !data || !data.length){ rankEl.textContent='計測中…'; return; }
     const r = data[0];
     countEl.textContent = (r.my_count||0)+'回';
-    rankEl.textContent  = `${r.my_count?`${r.my_rank}位 / ${r.total}人中`:`全${r.total}人が挑戦中`}`;
+    rankEl.textContent  = r.my_count ? `${r.my_rank}位 / ${r.total}人中` : `全${r.total}人が挑戦中`;
   }catch(e){ rankEl.textContent='計測中…'; }
 }
 
