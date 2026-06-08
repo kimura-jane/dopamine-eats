@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer">
 <title>Jomon Eats 🐕</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,13 +23,9 @@
   .brand .txt{font-family:"Poppins";font-size:21px;font-weight:800;letter-spacing:-.02em;}
   .brand .txt span{color:var(--g);}
   .badge{font-size:10px;background:#fff3e0;color:#e8590c;padding:4px 9px;border-radius:20px;font-weight:700;}
-  .deliver-to{font-size:12px;color:#666;margin-top:10px;cursor:pointer;}
-  .deliver-to b{color:var(--ink);font-weight:600;}
-  .searchbar{margin-top:11px;background:#f4f4f4;border-radius:11px;padding:11px 13px;
-    font-size:13px;color:#999;display:flex;align-items:center;gap:8px;}
 
   /* JOMONカウンター（トップ常時表示バー） */
-  .jomon-bar{margin-top:11px;background:linear-gradient(135deg,#1f1f1f,#3a2a1a);
+  .jomon-bar{margin-top:12px;background:linear-gradient(135deg,#1f1f1f,#3a2a1a);
     color:#ffd700;border-radius:12px;padding:11px 14px;display:flex;justify-content:space-between;
     align-items:center;font-weight:700;font-size:13px;border:1px solid rgba(255,215,0,.35);}
   .jomon-bar .jc-left{display:flex;align-items:center;gap:7px;}
@@ -187,13 +184,11 @@
     </div>
     <span class="badge">請求 ¥0</span>
   </div>
-  <div class="deliver-to" id="deliverTo" onclick="go('addr')">📍 お届け先を設定する ›</div>
-  <div class="searchbar">🔍 食べたいものを探す（けど頼まない）</div>
   <!-- JOMONカウンター（常時表示） -->
   <div class="jomon-bar">
     <div class="jc-left"><span>🏆 JOMONカウンター</span>
       <span class="jc-count" id="jcCount">0回</span></div>
-    <div class="jc-rank" id="jcRank">順位 計測中…</div>
+    <div class="jc-rank" id="jcRank">挑戦してね</div>
   </div>
 </header>
 
@@ -300,11 +295,13 @@
 const SUPABASE_URL = "https://ovlpawzrjemolbzcdvvh.supabase.co";
 const SUPABASE_KEY = "sb_publishable_Uwhc7Oqn2RGDf2W4DQ0SvQ_ijHrwpmT";
 let sb = null;
-try { sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e){ console.warn("supabase init失敗",e); }
+try {
+  if(window.supabase && window.supabase.createClient){
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  }
+} catch(e){ console.warn("supabase init失敗",e); }
 
-/* ===== 端末識別 UUID =====
-   初回起動時に生成して localStorage に保存。
-   ネイティブ化したら、ここをネイティブストレージ読み書きに差し替えれば永続性UP。 */
+/* ===== 端末識別 UUID ===== */
 function getDeviceId(){
   let id = localStorage.getItem("jomon_uuid");
   if(!id){
@@ -337,7 +334,7 @@ async function incrementJomon(){
   try{
     const {data,error} = await sb.rpc('increment_jomon',{p_uuid:DEVICE_ID});
     if(error){console.warn(error);return null;}
-    return data; // 新しいカウント
+    return data;
   }catch(e){console.warn(e);return null;}
 }
 
@@ -478,7 +475,14 @@ const RIDERS=[
  {name:"スズキ ミサキ",img:"https://randomuser.me/api/portraits/women/44.jpg",rate:"⭐ 4.8 ・ 配達1,870回"},
  {name:"サトウ リク",img:"https://randomuser.me/api/portraits/men/65.jpg",rate:"⭐ 5.0 ・ 配達5,540回"},
  {name:"イトウ ハルカ",img:"https://randomuser.me/api/portraits/women/68.jpg",rate:"⭐ 4.7 ・ 配達980回"},
- {name:"ヤマモト ダイチ",img:"https://randomuser.me/api/portraits/men/12.jpg",rate:"⭐ 4.9 ・ 配達4,110回"}];
+ {name:"ヤマモト ダイチ",img:"https://randomuser.me/api/portraits/men/12.jpg",rate:"⭐ 4.9 ・ 配達4,110回"},
+ {name:"ナカムラ ソウタ",img:"https://randomuser.me/api/portraits/men/45.jpg",rate:"⭐ 4.6 ・ 配達1,240回"},
+ {name:"コバヤシ アオイ",img:"https://randomuser.me/api/portraits/women/22.jpg",rate:"⭐ 4.8 ・ 配達2,650回"},
+ {name:"ワタナベ ユウト",img:"https://randomuser.me/api/portraits/men/76.jpg",rate:"⭐ 4.9 ・ 配達3,980回"},
+ {name:"タカハシ メイ",img:"https://randomuser.me/api/portraits/women/90.jpg",rate:"⭐ 5.0 ・ 配達6,210回"},
+ {name:"マツモト レン",img:"https://randomuser.me/api/portraits/men/8.jpg",rate:"⭐ 4.5 ・ 配達640回"},
+ {name:"イノウエ サクラ",img:"https://randomuser.me/api/portraits/women/57.jpg",rate:"⭐ 4.7 ・ 配達1,520回"},
+ {name:"キムラ ハヤト",img:"https://randomuser.me/api/portraits/men/91.jpg",rate:"⭐ 4.8 ・ 配達2,990回"}];
 
 /* 当たり配達員：草間縄文 */
 const JOMON={name:"草間縄文",img:"IMG_2764.jpeg",
@@ -519,7 +523,6 @@ async function setAddress(){
 function onAddressOk(q){
  const st=document.getElementById('addrStatus');
  st.textContent="お届け先を設定しました ✅";st.style.color="var(--g)";
- document.getElementById('deliverTo').innerHTML=`📍 お届け先：<b>${q}</b> ›`;
  renderPromos();renderCats();renderShops();go('shops');
 }
 
@@ -591,13 +594,10 @@ function renderCart(){const el=document.getElementById('cartItems');
   <div class="price-row total"><span>合計</span><span>¥${t.total.toLocaleString()} <small style="color:var(--g);">（請求¥0）</small></span></div>`;
 }
 
-/* ===== 配達員ガチャ判定 =====
-   ・カートに魚介系が1品でもあればハズレ確定
-   ・家系/ピザ系があれば 1/10
-   ・それ以外は 1/319 */
+/* ===== 配達員ガチャ判定 ===== */
 function isJomonHit(){
  const names=cart.map(c=>c.n).join("");
- if(FISH.some(f=>names.includes(f))) return false;        // 魚介はハズレ
+ if(FISH.some(f=>names.includes(f))) return false;
  const lucky=LUCKY.some(l=>names.includes(l));
  const p = lucky ? (1/10) : (1/319);
  return Math.random() < p;
@@ -620,7 +620,7 @@ function placeOrder(){if(cart.length===0){alert("カートが空だよ！");retu
   document.getElementById('riderRate').textContent=r.rate;
  }
  go('track');startTracking();
- cart=[];updateCartBar();   // 注文したらカートを空にしてバーを消す
+ cart=[];updateCartBar();
 }
 
 /* 当たり演出 */
@@ -631,7 +631,6 @@ async function jomonEffect(){
  void flash.offsetWidth;void banner.offsetWidth;
  flash.classList.add('go');banner.classList.add('go');
  burst(80);
- // サーバーのカウントを+1して、順位を更新
  const newCount=await incrementJomon();
  if(newCount!=null){
   document.getElementById('jcCount').textContent=`${newCount}回`;
@@ -687,7 +686,7 @@ function reset(){cart=[];currentShop=null;lastWasJomon=false;
  updateCartBar();go('shops');}
 
 renderPromos();renderCats();renderShops();
-refreshJomonRank();   // 起動時に自分の回数・順位を取得
+refreshJomonRank();
 </script>
 </body>
 </html>
