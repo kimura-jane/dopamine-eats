@@ -192,11 +192,8 @@ function renderCart(){
 /* ====== ガチャ判定（確率はコード内のみ・サイトには非表示） ====== */
 function isJomonHit(){
   const cats = cart.map(c=>c.cat);
-  // 寿司・魚介が含まれる → ハズレ確定
   if(cats.some(c=>FISH_CATS.includes(c))) return false;
-  // ピザ かつ ラーメン の両方が入っている → 1/10
   if(cats.includes('pizza') && cats.includes('ramen')) return Math.random()<1/10;
-  // それ以外 → 1/319
   return Math.random()<1/319;
 }
 
@@ -324,5 +321,10 @@ function init(){
   renderCats();
   renderShops();
   refreshCounter();
+  // 初回起動時のみ、パロディである旨を明示（App Store審査対策）
+  if(!localStorage.getItem('jomon_disclaimer')){
+    alert('Jomon Eats はジョーク／パロディアプリです。料理は実際には届かず、料金は一切発生しません（請求 ¥0）。');
+    localStorage.setItem('jomon_disclaimer','1');
+  }
 }
 init();
