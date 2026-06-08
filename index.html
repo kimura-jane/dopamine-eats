@@ -44,7 +44,6 @@
     padding:15px;border-radius:11px;font-weight:700;font-size:15px;cursor:pointer;font-family:inherit;}
   .addr-status{font-size:12px;margin-top:11px;}
 
-  /* 宣伝バナー横スクロール */
   .promos{display:flex;gap:12px;overflow-x:auto;padding:16px 16px 4px;scrollbar-width:none;}
   .promos::-webkit-scrollbar{display:none;}
   .promo-card{flex:0 0 82%;border-radius:16px;padding:18px;color:#fff;position:relative;overflow:hidden;}
@@ -224,11 +223,10 @@
 
 <script>
 const W="https://upload.wikimedia.org/wikipedia/commons/thumb/";
-// 宣伝バナー
 const PROMOS=[
  {bg:"linear-gradient(135deg,#06c167,#04a056)",h:"深夜2時、いま142人が頼んだフリ中",p:"あなたも今夜、ノーカロリー・ノー出費で背徳に浸ろう。",e:"🛵"},
  {bg:"linear-gradient(135deg,#e8590c,#f08c00)",h:"初回クーポン ¥300 OFF",p:"どうせ請求¥0だけど、割引されると気持ちいい。",e:"🎟️"},
- {bg:"linear-gradient(135deg,#7048e8,#9c36b5)",h:"今夜の背徳ランキング1位：豚骨ラーメン",p:"みんな深夜に頼んだフリ。あなたは何にする？",e:"🍜"},
+ {bg:"linear-gradient(135deg,#7048e8,#9c36b5)",h:"今夜の背徳ランキング1位：二郎系ラーメン",p:"みんな深夜に頼んだフリ。あなたは何にする？",e:"🍜"},
  {bg:"linear-gradient(135deg,#1098ad,#0c8599)",h:"送料無料クーポン配布中",p:"無料がさらに無料に。意味はないけど嬉しい。",e:"💸"},
 ];
 const SHOPS=[
@@ -239,6 +237,34 @@ const SHOPS=[
    {n:"味玉つけ麺",d:"とろとろ味玉と魚介豚骨の濃厚つけ汁。〆まで背徳。",p:1080,img:W+"8/8d/Tsukemen_by_jetalone.jpg/320px-Tsukemen_by_jetalone.jpg"},
    {n:"焼き餃子6個",d:"パリッとジューシー。ビールが欲しくなる(けど頼めない)。",p:420,img:W+"0/0d/Gyoza_in_Japan.jpg/320px-Gyoza_in_Japan.jpg"},
    {n:"チャーシュー丼",d:"炙りチャーシューがご飯を覆い尽くす深夜の凶器。",p:550,img:W+"3/3a/Chashu_don.jpg/320px-Chashu_don.jpg"}]},
+ {name:"家系ラーメン 武勇家",cat:"ramen",time:"20-30分",rate:"4.7",rev:"1,640",lat:35.6810,lng:139.7660,
+  hero:W+"a/ad/Ikkakuya_Iekei-ramen_%28shio%29.jpg/640px-Ikkakuya_Iekei-ramen_%28shio%29.jpg",promo:"深夜割対象",
+  menu:[
+   {n:"家系ラーメン（並）",d:"豚骨醤油の濃厚スープに太麺。ライス無料で背徳倍増。",p:880,img:W+"a/ad/Ikkakuya_Iekei-ramen_%28shio%29.jpg/320px-Ikkakuya_Iekei-ramen_%28shio%29.jpg"},
+   {n:"のり増し家系",d:"スープに浸したのりで白米を巻く。深夜の悪魔的ループ。",p:980,img:W+"a/ad/Ikkakuya_Iekei-ramen_%28shio%29.jpg/320px-Ikkakuya_Iekei-ramen_%28shio%29.jpg"},
+   {n:"チャーシュー麺",d:"とろとろ豚バラチャーシューを大量投入。罪の塊。",p:1180,img:W+"3/3a/Chashu_don.jpg/320px-Chashu_don.jpg"},
+   {n:"半ライス",d:"濃厚スープと合わせる用。〆られない深夜の言い訳。",p:150,img:W+"d/d2/Korean.food-Bibimbap-01.jpg/320px-Korean.food-Bibimbap-01.jpg"}]},
+ {name:"ラーメン二郎系 豚力",cat:"ramen",time:"25-35分",rate:"4.6",rev:"2,210",lat:35.7000,lng:139.6900,
+  hero:W+"3/3a/Ramen_Jiro_02.jpg/640px-Ramen_Jiro_02.jpg",promo:"深夜割対象",
+  menu:[
+   {n:"小ラーメン（ヤサイマシマシ）",d:"野菜の山・背脂・ニンニク。完食できたら勝ち。",p:850,img:W+"3/3a/Ramen_Jiro_02.jpg/320px-Ramen_Jiro_02.jpg"},
+   {n:"大ラーメン",d:"麺300g超の暴力。明日のことは一切考えない。",p:1000,img:W+"3/3a/Ramen_Jiro_02.jpg/320px-Ramen_Jiro_02.jpg"},
+   {n:"豚増し",d:"分厚いチャーシューを追加。罪悪感ごと飲み込む。",p:1300,img:W+"3/3a/Chashu_don.jpg/320px-Chashu_don.jpg"},
+   {n:"ウーロン茶",d:"せめてもの抵抗。効果はない。",p:200,img:W+"4/41/Coca_Cola_Flasche_-_Original_Taste.jpg/320px-Coca_Cola_Flasche_-_Original_Taste.jpg"}]},
+ {name:"四川担々麺 麻辣堂",cat:"ramen",time:"20-30分",rate:"4.8",rev:"1,380",lat:35.6890,lng:139.7300,
+  hero:W+"5/5e/Dandan_noodles_in_Japan_-_tantanmen_-_September_2014.jpg/640px-Dandan_noodles_in_Japan_-_tantanmen_-_September_2014.jpg",promo:"新規¥300 OFF",
+  menu:[
+   {n:"汁あり担々麺",d:"花椒シビれる胡麻スープに挽肉たっぷり。中毒性の罪。",p:980,img:W+"5/5e/Dandan_noodles_in_Japan_-_tantanmen_-_September_2014.jpg/320px-Dandan_noodles_in_Japan_-_tantanmen_-_September_2014.jpg"},
+   {n:"汁なし担々麺",d:"濃厚ダレを絡める背徳の一杯。〆飯もどうぞ。",p:1080,img:W+"5/5e/Dandan_noodles_in_Japan_-_tantanmen_-_September_2014.jpg/320px-Dandan_noodles_in_Japan_-_tantanmen_-_September_2014.jpg"},
+   {n:"麻辣マシ担々麺",d:"辛さと痺れを限界まで。汗だくの快感。",p:1180,img:W+"5/5e/Dandan_noodles_in_Japan_-_tantanmen_-_September_2014.jpg/320px-Dandan_noodles_in_Japan_-_tantanmen_-_September_2014.jpg"},
+   {n:"よだれ鶏",d:"ピリ辛ダレの蒸し鶏。ビールが恋しくなる。",p:680,img:W+"5/5b/Sweet_and_sour_pork.jpg/320px-Sweet_and_sour_pork.jpg"}]},
+ {name:"中華そば 醤油の蔵",cat:"ramen",time:"15-25分",rate:"4.7",rev:"1,120",lat:35.6750,lng:139.7400,
+  hero:W+"a/a8/Shoyu_ramen%2C_at_Kasukabe_Station_%282014.05.05%29_1.jpg/640px-Shoyu_ramen%2C_at_Kasukabe_Station_%282014.05.05%29_1.jpg",promo:"¥300 OFF対象",
+  menu:[
+   {n:"あっさり醤油ラーメン",d:"鶏ガラと魚介の澄んだスープ。深夜でも罪悪感低め(嘘)。",p:780,img:W+"a/a8/Shoyu_ramen%2C_at_Kasukabe_Station_%282014.05.05%29_1.jpg/320px-Shoyu_ramen%2C_at_Kasukabe_Station_%282014.05.05%29_1.jpg"},
+   {n:"特製ワンタン麺",d:"つるんとしたワンタンが浮かぶ上品な一杯。",p:980,img:W+"a/a8/Shoyu_ramen%2C_at_Kasukabe_Station_%282014.05.05%29_1.jpg/320px-Shoyu_ramen%2C_at_Kasukabe_Station_%282014.05.05%29_1.jpg"},
+   {n:"味玉中華そば",d:"とろり半熟味玉つき。シンプルゆえの完成度。",p:880,img:W+"a/a8/Shoyu_ramen%2C_at_Kasukabe_Station_%282014.05.05%29_1.jpg/320px-Shoyu_ramen%2C_at_Kasukabe_Station_%282014.05.05%29_1.jpg"},
+   {n:"半チャーハン",d:"中華そばと最強の組み合わせ。背徳セットの完成。",p:480,img:W+"8/8d/Yangzhou_fried_rice_by_yuen.jpg/320px-Yangzhou_fried_rice_by_yuen.jpg"}]},
  {name:"バーガーパラダイス",cat:"burger",time:"15-25分",rate:"4.6",rev:"892",lat:35.6586,lng:139.7016,
   hero:W+"0/0b/RedDot_Burger.jpg/640px-RedDot_Burger.jpg",promo:"¥300 OFF対象",
   menu:[
@@ -246,6 +272,20 @@ const SHOPS=[
    {n:"フライドポテトL",d:"揚げたてホクホク。塩は気持ち多め。深夜の正義。",p:380,img:W+"8/89/French_Fries.JPG/320px-French_Fries.JPG"},
    {n:"スパイシーナゲット10個",d:"外はサクッ中はジューシー。3種ソース付き。",p:520,img:W+"8/86/Chicken_McNuggets_%28cropped%29.jpg/320px-Chicken_McNuggets_%28cropped%29.jpg"},
    {n:"チョコシェイク",d:"濃厚すぎてストローが進まない背徳の一杯。",p:420,img:W+"2/2f/Chocolate_milkshake_%2818440544465%29.jpg/320px-Chocolate_milkshake_%2818440544465%29.jpg"}]},
+ {name:"グルメバーガー BRUTE",cat:"burger",time:"20-30分",rate:"4.8",rev:"1,090",lat:35.6600,lng:139.7280,
+  hero:W+"d/d5/Avocado_burger_and_bacon_cheeseburger.jpg/640px-Avocado_burger_and_bacon_cheeseburger.jpg",promo:"送料無料対象",
+  menu:[
+   {n:"アボカドベーコンバーガー",d:"濃厚アボカドとカリカリベーコン。崩さず食べるのは無理。",p:1280,img:W+"d/d5/Avocado_burger_and_bacon_cheeseburger.jpg/320px-Avocado_burger_and_bacon_cheeseburger.jpg"},
+   {n:"ダブルパティバーガー",d:"肉肉しいパティ2枚。口を限界まで開ける背徳。",p:1480,img:W+"3/3a/Double_Bacon_Smokehouse_Burger_2.jpg/320px-Double_Bacon_Smokehouse_Burger_2.jpg"},
+   {n:"トリュフチーズバーガー",d:"香り立つトリュフととろけるチーズ。大人の罪。",p:1680,img:W+"d/d5/Avocado_burger_and_bacon_cheeseburger.jpg/320px-Avocado_burger_and_bacon_cheeseburger.jpg"},
+   {n:"オニオンリング",d:"サクサク衣の玉ねぎ。ビールが進む(けど頼めない)。",p:480,img:W+"8/89/French_Fries.JPG/320px-French_Fries.JPG"}]},
+ {name:"クラシックバーガー Route66",cat:"burger",time:"15-25分",rate:"4.5",rev:"760",lat:35.6970,lng:139.7720,
+  hero:W+"8/85/Cheeseburger.jpg/640px-Cheeseburger.jpg",promo:"新規¥300 OFF",
+  menu:[
+   {n:"クラシックチーズバーガー",d:"王道の組み合わせ。深夜に食べる安心の背徳。",p:780,img:W+"8/85/Cheeseburger.jpg/320px-Cheeseburger.jpg"},
+   {n:"ダブルチーズバーガー",d:"チーズとパティを倍に。罪悪感も倍。",p:980,img:W+"8/85/Cheeseburger.jpg/320px-Cheeseburger.jpg"},
+   {n:"チリチーズフライ",d:"ポテトにチリとチーズをどっさり。手が止まらない。",p:580,img:W+"8/89/French_Fries.JPG/320px-French_Fries.JPG"},
+   {n:"バニラシェイク",d:"濃厚バニラの一杯。バーガーの相棒。",p:420,img:W+"2/2f/Chocolate_milkshake_%2818440544465%29.jpg/320px-Chocolate_milkshake_%2818440544465%29.jpg"}]},
  {name:"ピザ・ノッテ",cat:"pizza",time:"25-35分",rate:"4.7",rev:"1,560",lat:35.7295,lng:139.7109,
   hero:W+"9/91/Pizza-3007395.jpg/640px-Pizza-3007395.jpg",promo:"送料無料対象",
   menu:[
@@ -281,13 +321,6 @@ const SHOPS=[
    {n:"ベルギーワッフル",d:"外サクッ中ふわっ。生クリームとメープルで罪深く。",p:680,img:W+"7/74/Waffles_with_Strawberries.jpg/320px-Waffles_with_Strawberries.jpg"},
    {n:"ニューヨークチーズケーキ",d:"濃厚なめらか。深夜の自分へのご褒美(無料)。",p:620,img:W+"7/79/Cheesecake.jpg/320px-Cheesecake.jpg"},
    {n:"アイスカフェモカ",d:"チョコとコーヒーの誘惑。カロリーは気にしない。",p:580,img:W+"6/64/Iced_coffee_with_cream.jpg/320px-Iced_coffee_with_cream.jpg"}]},
- {name:"スイーツ深夜便",cat:"sweets",time:"20-30分",rate:"4.9",rev:"2,031",lat:35.6705,lng:139.7649,
-  hero:W+"2/29/Chocolate_cake_with_chocolate_frosting_topped_with_chocolate.jpg/640px-Chocolate_cake_with_chocolate_frosting_topped_with_chocolate.jpg",promo:"新規¥300 OFF",
-  menu:[
-   {n:"生チョコケーキ",d:"口どけ濃厚。深夜に食べる背徳の王様。",p:680,img:W+"2/29/Chocolate_cake_with_chocolate_frosting_topped_with_chocolate.jpg/320px-Chocolate_cake_with_chocolate_frosting_topped_with_chocolate.jpg"},
-   {n:"いちごパフェ",d:"生クリームとアイスと苺の暴力。罪の味。",p:780,img:W+"7/7c/Strawberry_parfait.jpg/320px-Strawberry_parfait.jpg"},
-   {n:"焼きたてプリン",d:"ほろ苦カラメルととろける卵。背徳の定番。",p:450,img:W+"a/a5/Creme_caramel.jpg/320px-Creme_caramel.jpg"},
-   {n:"いちごクレープ",d:"もちもち生地にたっぷりクリーム。",p:520,img:W+"f/f0/Cr%C3%AApe_with_strawberries_and_cream.jpg/320px-Cr%C3%AApe_with_strawberries_and_cream.jpg"}]},
  {name:"アサイーボウル専門 AÇAÍ",cat:"acai",time:"15-25分",rate:"4.8",rev:"965",lat:35.6646,lng:139.7106,
   hero:W+"5/5e/Acai_bowl_%2843779425762%29.jpg/640px-Acai_bowl_%2843779425762%29.jpg",promo:"新規¥300 OFF",
   menu:[
@@ -309,6 +342,13 @@ const SHOPS=[
    {n:"もつ鍋",d:"プリプリもつとニラの旨み。〆まで罪。",p:1480,img:W+"a/ad/Sukiyaki_01.jpg/320px-Sukiyaki_01.jpg"},
    {n:"キムチ鍋",d:"ピリ辛で体ぽかぽか。汗かいて背徳を流す。",p:1280,img:W+"a/ad/Sukiyaki_01.jpg/320px-Sukiyaki_01.jpg"},
    {n:"〆のうどん",d:"鍋の旨みを吸ったうどん。これが本命。",p:380,img:W+"7/72/Ise_udon_by_hirotomo.jpg/320px-Ise_udon_by_hirotomo.jpg"}]},
+ {name:"スイーツ深夜便",cat:"sweets",time:"20-30分",rate:"4.9",rev:"2,031",lat:35.6705,lng:139.7649,
+  hero:W+"2/29/Chocolate_cake_with_chocolate_frosting_topped_with_chocolate.jpg/640px-Chocolate_cake_with_chocolate_frosting_topped_with_chocolate.jpg",promo:"新規¥300 OFF",
+  menu:[
+   {n:"生チョコケーキ",d:"口どけ濃厚。深夜に食べる背徳の王様。",p:680,img:W+"2/29/Chocolate_cake_with_chocolate_frosting_topped_with_chocolate.jpg/320px-Chocolate_cake_with_chocolate_frosting_topped_with_chocolate.jpg"},
+   {n:"いちごパフェ",d:"生クリームとアイスと苺の暴力。罪の味。",p:780,img:W+"7/7c/Strawberry_parfait.jpg/320px-Strawberry_parfait.jpg"},
+   {n:"焼きたてプリン",d:"ほろ苦カラメルととろける卵。背徳の定番。",p:450,img:W+"a/a5/Creme_caramel.jpg/320px-Creme_caramel.jpg"},
+   {n:"いちごクレープ",d:"もちもち生地にたっぷりクリーム。",p:520,img:W+"f/f0/Cr%C3%AApe_with_strawberries_and_cream.jpg/320px-Cr%C3%AApe_with_strawberries_and_cream.jpg"}]},
 ];
 const CATS=[{k:"all",e:"🍽️",l:"すべて"},{k:"ramen",e:"🍜",l:"ラーメン"},{k:"burger",e:"🍔",l:"バーガー"},
  {k:"pizza",e:"🍕",l:"ピザ"},{k:"chinese",e:"🥟",l:"中華"},{k:"sushi",e:"🍣",l:"寿司"},
