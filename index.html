@@ -29,7 +29,6 @@
   </div>
 </header>
 
-<!-- 住所入力 -->
 <section class="screen active" id="address">
   <div class="addr-box">
     <h2>どこにお届けしますか？</h2>
@@ -40,27 +39,23 @@
   </div>
 </section>
 
-<!-- 店舗一覧 -->
 <section class="screen" id="shops">
   <div class="promos" id="promos"></div>
   <div class="cats" id="cats"></div>
   <div id="shopList"></div>
 </section>
 
-<!-- メニュー -->
 <section class="screen" id="menu">
   <button class="back" onclick="go('shops')">← 店舗一覧へ</button>
   <div id="menuBody"></div>
 </section>
 
-<!-- カート -->
 <section class="screen" id="cart">
   <button class="back" onclick="go('menu')">← メニューへ</button>
   <h2 class="sec-title">カート</h2>
   <div id="cartBody"></div>
 </section>
 
-<!-- 追跡 -->
 <section class="screen" id="track">
   <h2 class="sec-title">配達状況</h2>
   <div id="map"></div>
@@ -69,7 +64,6 @@
   <button class="back" style="margin-top:20px" onclick="go('shops')">← もう一度注文する</button>
 </section>
 
-<!-- カートバー -->
 <div class="cartbar" id="cartbar" style="display:none" onclick="go('cart')">
   <span id="cartbarCount">0点</span>
   <span id="cartbarTotal">¥0</span>
