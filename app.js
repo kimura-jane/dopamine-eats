@@ -183,18 +183,21 @@ function renderCart(){
       <div class="row"><span>サービス料</span><span>¥${t.service.toLocaleString()}</span></div>
       ${t.discount?`<div class="row"><span>割引</span><span>-¥${t.discount.toLocaleString()}</span></div>`:''}
       <div class="row grand"><span>合計</span><span>¥${t.total.toLocaleString()}</span></div>
-      <div class="row" style="color:var(--accent2)"><span>請求額</span><span>¥0</span></div>
+      <div class="row" style="color:var(--accent-d)"><span>請求額</span><span>¥0</span></div>
     </div>
     <button class="primary" onclick="placeOrder()">この内容で注文（請求 ¥0）</button>
   `;
 }
 
-/* ====== ガチャ判定 ====== */
+/* ====== ガチャ判定（確率はコード内のみ・サイトには非表示） ====== */
 function isJomonHit(){
   const cats = cart.map(c=>c.cat);
-  if(cats.some(c=>FISH_CATS.includes(c))) return false;               // 寿司・魚介 → ハズレ確定
-  if(cats.some(c=>LUCKY_CATS.includes(c))) return Math.random()<1/10; // 家系・ピザ・バーガー → 1/10
-  return Math.random()<1/319;                                         // 通常 → 1/319
+  // 寿司・魚介が含まれる → ハズレ確定
+  if(cats.some(c=>FISH_CATS.includes(c))) return false;
+  // ピザ かつ ラーメン の両方が入っている → 1/10
+  if(cats.includes('pizza') && cats.includes('ramen')) return Math.random()<1/10;
+  // それ以外 → 1/319
+  return Math.random()<1/319;
 }
 
 /* ====== 注文 ====== */
@@ -203,7 +206,7 @@ function placeOrder(){
   if(!cart.length) return;
   lastHit = isJomonHit();
   startTracking(lastHit);
-  cart = [];               // カートを空にする
+  cart = [];
   updateCartbar();
   go('track');
   if(lastHit) showJackpot();
@@ -222,7 +225,7 @@ function startTracking(hit){
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(mapObj);
   L.marker([shop.lat,shop.lng]).addTo(mapObj).bindPopup(shop.name);
   L.marker([HOME.lat,HOME.lng]).addTo(mapObj).bindPopup('お届け先');
-  L.polyline([[shop.lat,shop.lng],[HOME.lat,HOME.lng]],{color:'#c8a25a'}).addTo(mapObj);
+  L.polyline([[shop.lat,shop.lng],[HOME.lat,HOME.lng]],{color:'#06c167'}).addTo(mapObj);
 
   const km = distKm(HOME,{lat:shop.lat,lng:shop.lng});
   let eta = Math.max(8, Math.round(km*6));
@@ -258,7 +261,7 @@ function showRealAd(){
   ad.style.display='block';
   ad.innerHTML = `
     <h3>本当にお腹が空いたら</h3>
-    <p style="font-size:12px;color:var(--sub);line-height:1.6">このアプリでは料理は届きません。実際に注文するなら、下のサービスからどうぞ。</p>
+    <p style="font-size:13px;color:var(--sub);line-height:1.7">このアプリでは料理は届きません。実際に注文するなら、下のサービスからどうぞ。</p>
     <a href="https://www.ubereats.com/jp" target="_blank" rel="noopener">Uber Eats で注文する</a>
   `;
 }
@@ -279,7 +282,7 @@ async function showJackpot(){
   await registerJomon();
 }
 function burst(){
-  const colors=['#c8a25a','#e7d4a6','#fff','#a87f4a'];
+  const colors=['#f5d76e','#06c167','#fff','#ffd24a'];
   for(let i=0;i<60;i++){
     const c=document.createElement('div');
     c.className='confetti';
@@ -297,7 +300,7 @@ function burst(){
 async function registerJomon(){
   if(!sb) return;
   try{
-    const {error} = await sb.rpc('increment_jomon', {p_uuid: MY_UUID});
+    const {data, error} = await sb.rpc('increment_jomon', {p_uuid: MY_UUID});
     if(error){ console.warn(error); return; }
     await refreshCounter();
   }catch(e){ console.warn(e); }
@@ -308,10 +311,10 @@ async function refreshCounter(){
   if(!sb){ countEl.textContent='0回'; rankEl.textContent='ローカル動作中'; return; }
   try{
     const {data, error} = await sb.rpc('get_jomon_rank', {p_uuid: MY_UUID});
-    if(error || !data || !data.length){ rankEl.textContent='計測中…'; return; }
+    if(error || !data || !data.length){ countEl.textContent='0回'; rankEl.textContent='計測中…'; return; }
     const r = data[0];
     countEl.textContent = (r.my_count||0)+'回';
-    rankEl.textContent  = r.my_count ? `${r.my_rank}位 / ${r.total}人中` : `全${r.total}人が挑戦中`;
+    rankEl.textContent  = `${r.my_count?`${r.my_rank}位 / ${r.total}人中`:`全${r.total}人が挑戦中`}`;
   }catch(e){ rankEl.textContent='計測中…'; }
 }
 
