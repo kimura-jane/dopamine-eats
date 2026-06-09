@@ -65,6 +65,38 @@ workflows:
       - name: Sync Capacitor (copy web assets to iOS project)
         script: |
           npx cap sync ios
+      - name: Force overwrite Splash images (light + dark) with our white splash
+        script: |
+          IMGSET="ios/App/App/Assets.xcassets/Splash.imageset"
+          mkdir -p "$IMGSET"
+          echo "=== 上書き前の Splash.imageset ==="
+          ls -la "$IMGSET" || true
+
+          # 自作の白背景 splash.png を、Splash.imageset 内の全 PNG に物理コピー（通常＋ダーク両方）
+          for f in "$IMGSET"/*.png; do
+            if [ -f "$f" ]; then
+              cp assets/splash.png "$f"
+              echo "overwrote: $f"
+            fi
+          done
+
+          # 念のため、想定される全ファイル名を明示的に上書き（存在しなければ作成）
+          for name in \
+            "Default@1x~universal~anyany.png" \
+            "Default@2x~universal~anyany.png" \
+            "Default@3x~universal~anyany.png" \
+            "Default@1x~universal~anyany-dark.png" \
+            "Default@2x~universal~anyany-dark.png" \
+            "Default@3x~universal~anyany-dark.png"; do
+            cp assets/splash.png "$IMGSET/$name"
+          done
+
+          echo "=== 上書き後の Splash.imageset ==="
+          ls -la "$IMGSET"
+          echo "=== 上書き後の各ファイルサイズ確認（全て同じサイズなら成功） ==="
+          for f in "$IMGSET"/*.png; do
+            file "$f"
+          done
       - name: Fix LaunchScreen storyboard (white bg + fullscreen splash)
         script: |
           STORYBOARD="ios/App/App/Base.lproj/LaunchScreen.storyboard"
