@@ -30,6 +30,10 @@ workflows:
           if [ ! -d "ios" ]; then
             npx cap add ios
           fi
+      - name: Generate app icons
+        script: |
+          npm install -D @capacitor/assets
+          npx capacitor-assets generate --ios
       - name: Sync Capacitor (copy web assets to iOS project)
         script: |
           npx cap sync ios
