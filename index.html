@@ -30,11 +30,17 @@
 </header>
 
 <section class="screen active" id="address">
+  <div class="hero-logo">
+    <img src="IMG_2764.jpeg" alt="Jomon Eats">
+    <div class="hl-name">Jomon<span>Eats</span></div>
+    <div class="hl-tag">頼んでも1円も減らない、背徳のフードデリバリー</div>
+  </div>
   <div class="addr-box">
-    <h2>どこにお届けしますか？</h2>
-    <p class="hint">住所を入れると、近くの“背徳系”店舗が表示されます。<br>料理は届きません。請求も永遠に ¥0 です。</p>
-    <input type="text" id="addrInput" placeholder="例：東京都新宿区西新宿2-8-1" autocomplete="off">
-    <button class="primary" onclick="setAddress()">この住所で探す</button>
+    <h2>お届け先の住所を入力してください 🏠</h2>
+    <div class="warn">⚠ 番地（〇丁目〇番〇号）は書かないでください。「市区町村＋町名」までで OK です。</div>
+    <input type="text" id="addrInput" placeholder="例：東京都新宿区西新宿" autocomplete="off">
+    <button class="primary" onclick="setAddress()">この住所に届ける</button>
+    <p class="note">※GPS・位置情報は取得しません。入力された住所から最寄り店舗を表示するだけで、住所はサーバーに保存しません。料理は届かず、請求は永遠に ¥0 です。</p>
     <div class="addr-msg" id="addrMsg"></div>
   </div>
 </section>
