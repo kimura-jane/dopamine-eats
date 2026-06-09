@@ -115,3 +115,12 @@ button.primary:active{background:var(--accent-d);}
 .jackpot button{background:#f5d76e; color:#0a0a0a; border:none; padding:13px 28px; border-radius:22px; font-weight:700; cursor:pointer;}
 @keyframes flash{0%{background:#fff;}40%{background:rgba(245,215,110,.6);}100%{background:rgba(0,0,0,.88);}}
 .confetti{position:fixed; width:10px; height:10px; z-index:998; pointer-events:none; border-radius:2px;}
+
+/* ===== トップの大きいロゴ・注意書き（追記） ===== */
+.hero-logo{text-align:center; padding:28px 0 10px;}
+.hero-logo img{width:120px; height:120px; border-radius:26px; object-fit:cover; box-shadow:var(--shadow);}
+.hero-logo .hl-name{font-size:28px; font-weight:900; letter-spacing:-.02em; margin-top:14px;}
+.hero-logo .hl-name span{color:var(--accent);}
+.hero-logo .hl-tag{font-size:13px; color:var(--sub); margin-top:6px;}
+.warn{font-size:12px; font-weight:600; color:#b35b00; background:#fff4e5; border:1px solid #ffd9a8; border-radius:10px; padding:10px 12px; line-height:1.6; margin-bottom:14px;}
+.note{font-size:11px; color:var(--sub); line-height:1.7; margin-top:14px;}
