@@ -50,30 +50,50 @@ workflows:
           <svg xmlns="http://www.w3.org/2000/svg" width="2732" height="2732" viewBox="0 0 2732 2732">
             <rect width="2732" height="2732" fill="#ffffff"/>
             <text x="1366" y="1390" text-anchor="middle"
-                  font-family="Helvetica, Arial, sans-serif" font-weight="900" font-size="240">
+                  font-family="Helvetica, Arial, sans-serif" font-weight="bold" font-size="240">
               <tspan fill="#0a0a0a">Jomon</tspan><tspan fill="#06c167"> Eats</tspan>
             </text>
             <text x="1366" y="1530" text-anchor="middle"
-                  font-family="Helvetica, Arial, sans-serif" font-weight="500" font-size="70" fill="#6b6b6b">
+                  font-family="Helvetica, Arial, sans-serif" font-size="70" fill="#6b6b6b">
               背徳のフードデリバリー
             </text>
           </svg>
           EOF
 
-          # SVG を PNG に変換
-          if command -v rsvg-convert >/dev/null 2>&1; then
-            rsvg-convert -w 2732 -h 2732 assets/splash.svg -o assets/splash.png
-          elif command -v qlmanage >/dev/null 2>&1; then
-            qlmanage -t -s 2732 -o assets assets/splash.svg
-            mv assets/splash.svg.png assets/splash.png 2>/dev/null || true
-          fi
+          # SVG を PNG に変換（cairosvg を使う・最も確実）
+          pip3 install cairosvg 2>/dev/null || pip3 install --user cairosvg 2>/dev/null || true
+          python3 -c "import cairosvg; cairosvg.svg2png(url='assets/splash.svg', write_to='assets/splash.png', output_width=2732, output_height=2732)" 2>/dev/null || true
 
-          # 万一 splash.png が作れなかった場合は白一色で代用
+          # cairosvg がダメなら rsvg-convert を試す
           if [ ! -f "assets/splash.png" ]; then
-            sips -s format png --resampleHeightWidth 2732 2732 assets/icon.png --out assets/splash.png 2>/dev/null || true
+            if command -v rsvg-convert >/dev/null 2>&1; then
+              rsvg-convert -w 2732 -h 2732 assets/splash.svg -o assets/splash.png
+            fi
           fi
 
+          # それでもダメなら、白背景の上にアイコンを中央配置したスプラッシュを作る
+          if [ ! -f "assets/splash.png" ]; then
+            pip3 install pillow 2>/dev/null || pip3 install --user pillow 2>/dev/null || true
+            python3 - <<'PY'
+from PIL import Image
+bg = Image.new("RGB", (2732, 2732), "white")
+try:
+    ic = Image.open("assets/icon.png").convert("RGBA")
+    ic.thumbnail((900, 900))
+    x = (2732 - ic.width)//2
+    y = (2732 - ic.height)//2
+    bg.paste(ic, (x, y), ic)
+except Exception as e:
+    print("icon paste skipped:", e)
+bg.save("assets/splash.png")
+PY
+          fi
+
+          echo "=== assets の中身 ==="
           ls -la assets
+          echo "=== splash.png ができているか確認 ==="
+          file assets/splash.png || echo "splash.png なし"
+
           npm install -D @capacitor/assets
           npx capacitor-assets generate --ios
       - name: Sync Capacitor (copy web assets to iOS project)
