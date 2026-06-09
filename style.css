@@ -116,7 +116,7 @@ button.primary:active{background:var(--accent-d);}
 @keyframes flash{0%{background:#fff;}40%{background:rgba(245,215,110,.6);}100%{background:rgba(0,0,0,.88);}}
 .confetti{position:fixed; width:10px; height:10px; z-index:998; pointer-events:none; border-radius:2px;}
 
-/* ===== トップの大きいロゴ・注意書き（追記） ===== */
+/* ===== トップの大きいロゴ・注意書き ===== */
 .hero-logo{text-align:center; padding:28px 0 10px;}
 .hero-logo img{width:120px; height:120px; border-radius:26px; object-fit:cover; box-shadow:var(--shadow);}
 .hero-logo .hl-name{font-size:28px; font-weight:900; letter-spacing:-.02em; margin-top:14px;}
