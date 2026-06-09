@@ -1,7 +1,7 @@
 {
   "appId": "com.jomon.eats",
   "appName": "Jomon Eats",
-  "webDir": "www",
+  "webDir": ".",
   "server": {
     "androidScheme": "https"
   },
