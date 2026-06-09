@@ -65,6 +65,54 @@ workflows:
       - name: Sync Capacitor (copy web assets to iOS project)
         script: |
           npx cap sync ios
+      - name: Fix LaunchScreen storyboard (white bg + fullscreen splash)
+        script: |
+          STORYBOARD="ios/App/App/Base.lproj/LaunchScreen.storyboard"
+          mkdir -p "ios/App/App/Base.lproj"
+          cat > "$STORYBOARD" <<'STORYEOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+              <device id="retina6_12" orientation="portrait" appearance="light"/>
+              <dependencies>
+                  <deployment identifier="iOS"/>
+                  <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+                  <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+                  <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+              </dependencies>
+              <scenes>
+                  <scene sceneID="EHf-IW-A2E">
+                      <objects>
+                          <viewController id="01J-lp-oVM" sceneMemberID="viewController">
+                              <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
+                                  <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                                  <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                  <subviews>
+                                      <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" image="Splash" translatesAutoresizingMaskIntoConstraints="NO" id="Spl-As-Hsh">
+                                          <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                                      </imageView>
+                                  </subviews>
+                                  <viewLayoutGuide key="safeArea" id="Bcu-3y-fUS"/>
+                                  <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                  <constraints>
+                                      <constraint firstItem="Spl-As-Hsh" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="t1a-aa-001"/>
+                                      <constraint firstItem="Spl-As-Hsh" firstAttribute="bottom" secondItem="Ze5-6b-2t3" secondAttribute="bottom" id="b1a-aa-002"/>
+                                      <constraint firstItem="Spl-As-Hsh" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="l1a-aa-003"/>
+                                      <constraint firstItem="Spl-As-Hsh" firstAttribute="trailing" secondItem="Ze5-6b-2t3" secondAttribute="trailing" id="r1a-aa-004"/>
+                                  </constraints>
+                              </view>
+                          </viewController>
+                          <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                      </objects>
+                      <point key="canvasLocation" x="53" y="375"/>
+                  </scene>
+              </scenes>
+              <resources>
+                  <image name="Splash" width="2732" height="2732"/>
+              </resources>
+          </document>
+          STORYEOF
+          echo "=== LaunchScreen.storyboard 上書き完了 ==="
+          cat "$STORYBOARD"
       - name: Cocoapods installation
         script: |
           cd ios/App && pod install
