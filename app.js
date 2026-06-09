@@ -218,14 +218,23 @@ function startTracking(hit){
 
   if(mapObj){ mapObj.remove(); mapObj=null; }
   document.getElementById('map').innerHTML='';
-  mapObj = L.map('map').setView([(HOME.lat+shop.lat)/2,(HOME.lng+shop.lng)/2], 14);
+  mapObj = L.map('map');
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(mapObj);
   L.marker([shop.lat,shop.lng]).addTo(mapObj).bindPopup(shop.name);
   L.marker([HOME.lat,HOME.lng]).addTo(mapObj).bindPopup('お届け先');
   L.polyline([[shop.lat,shop.lng],[HOME.lat,HOME.lng]],{color:'#06c167'}).addTo(mapObj);
 
-  // 地図のサイズを再計算（切れ防止）
-  setTimeout(()=>{ if(mapObj) mapObj.invalidateSize(); }, 300);
+  // 店舗とお届け先の両方が必ず画面に収まるようにする
+  const bounds = L.latLngBounds([[shop.lat,shop.lng],[HOME.lat,HOME.lng]]);
+  mapObj.fitBounds(bounds, {padding:[40,40]});
+
+  // 地図のサイズを再計算（切れ防止）＋もう一度フィット
+  setTimeout(()=>{
+    if(mapObj){
+      mapObj.invalidateSize();
+      mapObj.fitBounds(bounds, {padding:[40,40]});
+    }
+  }, 300);
 
   const km = distKm(HOME,{lat:shop.lat,lng:shop.lng});
   let eta = Math.max(8, Math.round(km*6));
