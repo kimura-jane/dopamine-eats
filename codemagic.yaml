@@ -5,11 +5,11 @@ workflows:
     max_build_duration: 120
     instance_type: mac_mini_m2
     integrations:
-      app_store_connect: codemagic   # ← Codemagic UIで登録するAPIキーの名前に合わせる
+      app_store_connect: codemagic
     environment:
       ios_signing:
         distribution_type: app_store
-        bundle_identifier: com.jomon.eats   # ← capacitor.config.json の appId と一致させる
+        bundle_identifier: com.jomon.eats
       vars:
         XCODE_WORKSPACE: "ios/App/App.xcworkspace"
         XCODE_SCHEME: "App"
@@ -39,14 +39,14 @@ workflows:
     publishing:
       email:
         recipients:
-          - 【where.is.my.oasis1216@gmail.com】
+          - where.is.my.oasis1216@gmail.com
         notify:
           success: true
           failure: true
       app_store_connect:
         auth: integration
-        submit_to_testflight: true   # まずTestFlightで自分の実機テスト
-        submit_to_app_store: false   # 審査提出は手動。慣れたら true に
+        submit_to_testflight: true
+        submit_to_app_store: false
 
   android-workflow:
     name: Jomon Eats Android
@@ -54,7 +54,7 @@ workflows:
     instance_type: linux_x2
     environment:
       android_signing:
-        - jomon_keystore   # ← Codemagic UIにアップするキーストアのReference name
+        - jomon_keystore
       vars:
         PACKAGE_NAME: "com.jomon.eats"
       node: latest
@@ -77,7 +77,7 @@ workflows:
     publishing:
       email:
         recipients:
-          - 【where.is.my.oasis1216@gmail.com】
+          - where.is.my.oasis1216@gmail.com
         notify:
           success: true
           failure: true
