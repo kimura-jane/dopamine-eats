@@ -18,6 +18,11 @@ workflows:
       - name: Install npm dependencies
         script: |
           npm install
+      - name: Add iOS platform if missing
+        script: |
+          if [ ! -d "ios" ]; then
+            npx cap add ios
+          fi
       - name: Sync Capacitor (copy web assets to iOS project)
         script: |
           npx cap sync ios
@@ -47,37 +52,3 @@ workflows:
         auth: integration
         submit_to_testflight: true
         submit_to_app_store: false
-
-  android-workflow:
-    name: Jomon Eats Android
-    max_build_duration: 120
-    instance_type: linux_x2
-    environment:
-      android_signing:
-        - jomon_keystore
-      vars:
-        PACKAGE_NAME: "com.jomon.eats"
-      node: latest
-    scripts:
-      - name: Install npm dependencies
-        script: |
-          npm install
-      - name: Set up local.properties
-        script: |
-          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/android/local.properties"
-      - name: Sync Capacitor (copy web assets to Android project)
-        script: |
-          npx cap sync android
-      - name: Build Android release (AAB)
-        script: |
-          cd android
-          ./gradlew bundleRelease
-    artifacts:
-      - android/app/build/outputs/**/*.aab
-    publishing:
-      email:
-        recipients:
-          - where.is.my.oasis1216@gmail.com
-        notify:
-          success: true
-          failure: true
