@@ -224,6 +224,9 @@ function startTracking(hit){
   L.marker([HOME.lat,HOME.lng]).addTo(mapObj).bindPopup('お届け先');
   L.polyline([[shop.lat,shop.lng],[HOME.lat,HOME.lng]],{color:'#06c167'}).addTo(mapObj);
 
+  // 地図のサイズを再計算（切れ防止）
+  setTimeout(()=>{ if(mapObj) mapObj.invalidateSize(); }, 300);
+
   const km = distKm(HOME,{lat:shop.lat,lng:shop.lng});
   let eta = Math.max(8, Math.round(km*6));
   const steps = ['注文を確定','店舗が調理開始','配達員が受け取り','お届け先へ向かっています','配達完了'];
