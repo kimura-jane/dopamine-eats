@@ -30,9 +30,11 @@ workflows:
           if [ ! -d "ios" ]; then
             npx cap add ios
           fi
-      - name: Generate app icons
+      - name: Generate app icons and splash
         script: |
           mkdir -p assets
+
+          # --- アイコン用 PNG を用意（icon.JPG → icon.png 変換） ---
           if [ -f "assets/icon.png" ]; then
             echo "icon.png already exists"
           elif [ -f "assets/icon.JPG" ]; then
@@ -41,9 +43,36 @@ workflows:
             sips -s format png assets/icon.jpg --out assets/icon.png
           elif [ -f "assets/icon.jpeg" ]; then
             sips -s format png assets/icon.jpeg --out assets/icon.png
-          elif [ -f "assets/icon.JPEG" ]; then
-            sips -s format png assets/icon.JPEG --out assets/icon.png
           fi
+
+          # --- スプラッシュ用 SVG を生成（白背景・中央に Jomon Eats） ---
+          cat > assets/splash.svg <<'EOF'
+          <svg xmlns="http://www.w3.org/2000/svg" width="2732" height="2732" viewBox="0 0 2732 2732">
+            <rect width="2732" height="2732" fill="#ffffff"/>
+            <text x="1366" y="1390" text-anchor="middle"
+                  font-family="Helvetica, Arial, sans-serif" font-weight="900" font-size="240">
+              <tspan fill="#0a0a0a">Jomon</tspan><tspan fill="#06c167"> Eats</tspan>
+            </text>
+            <text x="1366" y="1530" text-anchor="middle"
+                  font-family="Helvetica, Arial, sans-serif" font-weight="500" font-size="70" fill="#6b6b6b">
+              背徳のフードデリバリー
+            </text>
+          </svg>
+          EOF
+
+          # SVG を PNG に変換
+          if command -v rsvg-convert >/dev/null 2>&1; then
+            rsvg-convert -w 2732 -h 2732 assets/splash.svg -o assets/splash.png
+          elif command -v qlmanage >/dev/null 2>&1; then
+            qlmanage -t -s 2732 -o assets assets/splash.svg
+            mv assets/splash.svg.png assets/splash.png 2>/dev/null || true
+          fi
+
+          # 万一 splash.png が作れなかった場合は白一色で代用
+          if [ ! -f "assets/splash.png" ]; then
+            sips -s format png --resampleHeightWidth 2732 2732 assets/icon.png --out assets/splash.png 2>/dev/null || true
+          fi
+
           ls -la assets
           npm install -D @capacitor/assets
           npx capacitor-assets generate --ios
