@@ -18,6 +18,13 @@ workflows:
       - name: Install npm dependencies
         script: |
           npm install
+      - name: Prepare www folder (copy web assets)
+        script: |
+          mkdir -p www
+          cp index.html style.css data.js app.js www/ 2>/dev/null || true
+          cp IMG_2764.jpeg www/ 2>/dev/null || true
+          cp privacy.html www/ 2>/dev/null || true
+          ls -la www
       - name: Add iOS platform if missing
         script: |
           if [ ! -d "ios" ]; then
