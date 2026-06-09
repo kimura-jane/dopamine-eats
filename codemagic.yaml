@@ -32,6 +32,19 @@ workflows:
           fi
       - name: Generate app icons
         script: |
+          mkdir -p assets
+          if [ -f "assets/icon.png" ]; then
+            echo "icon.png already exists"
+          elif [ -f "assets/icon.JPG" ]; then
+            sips -s format png assets/icon.JPG --out assets/icon.png
+          elif [ -f "assets/icon.jpg" ]; then
+            sips -s format png assets/icon.jpg --out assets/icon.png
+          elif [ -f "assets/icon.jpeg" ]; then
+            sips -s format png assets/icon.jpeg --out assets/icon.png
+          elif [ -f "assets/icon.JPEG" ]; then
+            sips -s format png assets/icon.JPEG --out assets/icon.png
+          fi
+          ls -la assets
           npm install -D @capacitor/assets
           npx capacitor-assets generate --ios
       - name: Sync Capacitor (copy web assets to iOS project)
