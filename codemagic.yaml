@@ -24,7 +24,9 @@ workflows:
           cp index.html style.css data.js app.js www/ 2>/dev/null || true
           cp IMG_2764.jpeg www/ 2>/dev/null || true
           cp privacy.html www/ 2>/dev/null || true
+          cp -r gazo www/ 2>/dev/null || true
           ls -la www
+          ls -la www/gazo/man www/gazo/wowan 2>/dev/null || true
       - name: Add iOS platform if missing
         script: |
           if [ ! -d "ios" ]; then
