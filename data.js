@@ -17,12 +17,21 @@ const PROMOS = [
   {bg:'linear-gradient(135deg,#222,#06c167)',    h:'今夜のごほうび', p:'カロリーは見なかったことに。'}
 ];
 
-/* ========== 画像（TheMealDB・ホットリンクOK・検証済み） ========== */
+/* ========== 画像 ==========
+   ラーメン系は種類別に Wikimedia Commons の Special:FilePath（恒久URL・ホットリンク可）。
+   その他は TheMealDB（検証済み）。 */
 const IMG = {
-  ramen:   'https://www.themealdb.com/images/media/meals/ip5xtp1769779958.jpg',
-  ramen2:  'https://www.themealdb.com/images/media/meals/wrustq1511475474.jpg',
-  gyoza:   'https://www.themealdb.com/images/media/meals/1525874812.jpg',
-  chashu:  'https://www.themealdb.com/images/media/meals/d8f6qx1604182128.jpg',
+  // --- ラーメン種類別（Wikimedia Commons） ---
+  ramenTonkotsu: 'https://commons.wikimedia.org/wiki/Special:FilePath/Tonkotsu_ramen_in_Tokyo.jpg',
+  ramenIekei:    'https://commons.wikimedia.org/wiki/Special:FilePath/Iekeiramen111.jpg',
+  ramenToripaitan:'https://commons.wikimedia.org/wiki/Special:FilePath/Ramen-Izumi-Tori-paitan-Nagoya.jpg',
+  ramenMiso:     'https://commons.wikimedia.org/wiki/Special:FilePath/Tenkaippin_Miso_Ramen.jpg',
+  ramenJiro:     'https://commons.wikimedia.org/wiki/Special:FilePath/Ramen_Jiro_001.jpg',
+  ramenShoyu:    'https://commons.wikimedia.org/wiki/Special:FilePath/Soy_ramen.jpg',
+  gyoza:         'https://commons.wikimedia.org/wiki/Special:FilePath/Gy%C5%8Dza_003.jpg',
+  chashu:        'https://commons.wikimedia.org/wiki/Special:FilePath/Tonkotsu_ramen_in_Tokyo.jpg',
+
+  // --- その他（TheMealDB・検証済み） ---
   burger:  'https://www.themealdb.com/images/media/meals/urzj1d1587670726.jpg',
   burger2: 'https://www.themealdb.com/images/media/meals/44bzep1761848278.jpg',
   fries:   'https://www.themealdb.com/images/media/meals/j80gmw1764372176.jpg',
@@ -42,33 +51,31 @@ const IMG = {
 };
 
 /* ========== 店舗（30軒） ========== */
-/* cat: ramen / burger / pizza / chinese / sushi / donburi
-   lat,lng は東京付近にばらまき。hero/img は検証済みIMGを使い回し。 */
 const SHOPS = [
-  // --- ラーメン系（多め） ---
-  {name:'豚骨ラーメン 縄文', cat:'ramen', time:'25-35分', rate:4.7, rev:1820, lat:35.6618, lng:139.7041, hero:IMG.ramen, promo:'深夜営業中',
-    menu:[{n:'豚骨ラーメン', d:'濃厚スープに細麺。背徳の定番。', p:980, img:IMG.ramen},
-          {n:'のり増し家系', d:'のり10枚。タレ多め。', p:1080, img:IMG.ramen2},
-          {n:'チャーシュー麺', d:'炙りチャーシュー5枚。', p:1280, img:IMG.chashu},
+  // --- ラーメン系（種類別の画像に修正） ---
+  {name:'豚骨ラーメン 縄文', cat:'ramen', time:'25-35分', rate:4.7, rev:1820, lat:35.6618, lng:139.7041, hero:IMG.ramenTonkotsu, promo:'深夜営業中',
+    menu:[{n:'豚骨ラーメン', d:'濃厚スープに細麺。背徳の定番。', p:980, img:IMG.ramenTonkotsu},
+          {n:'のり増し', d:'のり10枚。タレ多め。', p:1080, img:IMG.ramenTonkotsu},
+          {n:'チャーシュー麺', d:'炙りチャーシュー5枚。', p:1280, img:IMG.ramenTonkotsu},
           {n:'餃子', d:'パリッと焼き上げ6個。', p:420, img:IMG.gyoza}]},
-  {name:'家系ラーメン 武蔵丸', cat:'ramen', time:'20-30分', rate:4.5, rev:990, lat:35.6700, lng:139.6950, hero:IMG.ramen2, promo:'',
-    menu:[{n:'家系ラーメン 並', d:'豚骨醤油の王道。', p:900, img:IMG.ramen2},
+  {name:'家系ラーメン 武蔵丸', cat:'ramen', time:'20-30分', rate:4.5, rev:990, lat:35.6700, lng:139.6950, hero:IMG.ramenIekei, promo:'',
+    menu:[{n:'家系ラーメン 並', d:'豚骨醤油の王道。', p:900, img:IMG.ramenIekei},
           {n:'ライス無料', d:'スープに浸して。', p:0, img:IMG.gohan},
-          {n:'味玉ラーメン', d:'とろり半熟。', p:1050, img:IMG.ramen}]},
-  {name:'濃厚鶏白湯 とりの', cat:'ramen', time:'25-35分', rate:4.6, rev:1340, lat:35.6555, lng:139.7100, hero:IMG.chashu, promo:'',
-    menu:[{n:'鶏白湯ラーメン', d:'クリーミーで濃厚。', p:1050, img:IMG.chashu},
+          {n:'味玉ラーメン', d:'とろり半熟。', p:1050, img:IMG.ramenIekei}]},
+  {name:'濃厚鶏白湯 とりの', cat:'ramen', time:'25-35分', rate:4.6, rev:1340, lat:35.6555, lng:139.7100, hero:IMG.ramenToripaitan, promo:'',
+    menu:[{n:'鶏白湯ラーメン', d:'クリーミーで濃厚。', p:1050, img:IMG.ramenToripaitan},
           {n:'特製チャーシュー丼', d:'ミニサイズの背徳。', p:580, img:IMG.gohan},
           {n:'餃子', d:'肉汁あふれる。', p:420, img:IMG.gyoza}]},
-  {name:'背脂煮干し 轟', cat:'ramen', time:'30-40分', rate:4.4, rev:760, lat:35.6480, lng:139.7000, hero:IMG.ramen, promo:'',
-    menu:[{n:'背脂煮干しそば', d:'こってり煮干し。', p:1000, img:IMG.ramen},
-          {n:'のり増し', d:'追いのり。', p:1100, img:IMG.ramen2}]},
-  {name:'味噌ラーメン 雪国', cat:'ramen', time:'25-35分', rate:4.5, rev:880, lat:35.6750, lng:139.7200, hero:IMG.ramen2, promo:'',
-    menu:[{n:'濃厚味噌ラーメン', d:'コクのある赤味噌。', p:980, img:IMG.ramen2},
-          {n:'炙りチャーシュー麺', d:'香ばしい。', p:1280, img:IMG.chashu},
+  {name:'背脂煮干し 轟', cat:'ramen', time:'30-40分', rate:4.4, rev:760, lat:35.6480, lng:139.7000, hero:IMG.ramenShoyu, promo:'',
+    menu:[{n:'背脂煮干しそば', d:'こってり煮干し。', p:1000, img:IMG.ramenShoyu},
+          {n:'のり増し', d:'追いのり。', p:1100, img:IMG.ramenShoyu}]},
+  {name:'味噌ラーメン 雪国', cat:'ramen', time:'25-35分', rate:4.5, rev:880, lat:35.6750, lng:139.7200, hero:IMG.ramenMiso, promo:'',
+    menu:[{n:'濃厚味噌ラーメン', d:'コクのある赤味噌。', p:980, img:IMG.ramenMiso},
+          {n:'炙りチャーシュー麺', d:'香ばしい。', p:1280, img:IMG.ramenMiso},
           {n:'餃子', d:'6個入り。', p:420, img:IMG.gyoza}]},
-  {name:'二郎系 漢盛り', cat:'ramen', time:'30-45分', rate:4.3, rev:2100, lat:35.6900, lng:139.7000, hero:IMG.chashu, promo:'大盛無料',
-    menu:[{n:'ラーメン マシマシ', d:'野菜・脂・にんにく全部乗せ。', p:1100, img:IMG.chashu},
-          {n:'豚増し', d:'分厚いチャーシュー。', p:1400, img:IMG.ramen}]},
+  {name:'二郎系 漢盛り', cat:'ramen', time:'30-45分', rate:4.3, rev:2100, lat:35.6900, lng:139.7000, hero:IMG.ramenJiro, promo:'大盛無料',
+    menu:[{n:'ラーメン マシマシ', d:'野菜・脂・にんにく全部乗せ。', p:1100, img:IMG.ramenJiro},
+          {n:'豚増し', d:'分厚いチャーシュー。', p:1400, img:IMG.ramenJiro}]},
 
   // --- バーガー系 ---
   {name:'グルメバーガー BRUTE', cat:'burger', time:'20-30分', rate:4.6, rev:980, lat:35.6645, lng:139.6987, hero:IMG.burger, promo:'',
@@ -158,10 +165,10 @@ const SHOPS = [
     menu:[{n:'唐揚げ盛り合わせ', d:'10個入り。', p:1080, img:IMG.karaage},
           {n:'唐揚げ丼', d:'タレだく。', p:880, img:IMG.karaage}]},
 
-  // --- 追加ラーメンで30軒に ---
-  {name:'醤油らーめん 一灯', cat:'ramen', time:'25-35分', rate:4.6, rev:1230, lat:35.6610, lng:139.7400, hero:IMG.ramen, promo:'',
-    menu:[{n:'中華そば', d:'澄んだ醤油。', p:880, img:IMG.ramen},
-          {n:'チャーシューワンタン麺', d:'贅沢盛り。', p:1380, img:IMG.chashu},
+  // --- 追加ラーメンで30軒に（醤油） ---
+  {name:'醤油らーめん 一灯', cat:'ramen', time:'25-35分', rate:4.6, rev:1230, lat:35.6610, lng:139.7400, hero:IMG.ramenShoyu, promo:'',
+    menu:[{n:'中華そば', d:'澄んだ醤油。', p:880, img:IMG.ramenShoyu},
+          {n:'チャーシューワンタン麺', d:'贅沢盛り。', p:1380, img:IMG.ramenShoyu},
           {n:'餃子', d:'6個。', p:420, img:IMG.gyoza}]}
 ];
 
