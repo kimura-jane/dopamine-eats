@@ -176,38 +176,41 @@ const SHOPS = [
 const FISH_CATS  = ['sushi'];                    // 含むとハズレ確定
 const LUCKY_CATS = ['ramen','pizza','burger'];   // ピザ＋家系ラーメン両方で確変
 
-/* ========== 配達員（30人：ローカル日本人写真 gazo/man・gazo/wowan を使用） ========== */
+/* ========== 配達員（30人：男性17・女性13。写真の性別に合わせて命名） ========== */
 const RIDERS = [
-  {name:'タナカ ケンジ',  img:'gazo/man/file_1781070143025.jpeg',   rate:'4.9 ・ 配達3,200回'},
+  // --- 男性17人（gazo/man） ---
+  {name:'タナカ ケンジ',  img:'gazo/man/file_1781070143025.jpeg', rate:'4.9 ・ 配達3,200回'},
+  {name:'サトウ リク',    img:'gazo/man/file_1781070145398.jpeg', rate:'5.0 ・ 配達5,540回'},
+  {name:'ヤマモト ダイチ',img:'gazo/man/file_1781070148569.jpeg', rate:'4.9 ・ 配達4,110回'},
+  {name:'ナカムラ ソウタ',img:'gazo/man/file_1781070151250.jpeg', rate:'4.6 ・ 配達1,240回'},
+  {name:'ワタナベ ユウト',img:'gazo/man/file_1781070153413.jpeg', rate:'4.9 ・ 配達3,980回'},
+  {name:'マツモト レン',  img:'gazo/man/file_1781070155990.jpeg', rate:'4.5 ・ 配達640回'},
+  {name:'キムラ ハヤト',  img:'gazo/man/file_1781070158689.jpeg', rate:'4.8 ・ 配達2,990回'},
+  {name:'シミズ タクミ',  img:'gazo/man/file_1781070160949.jpeg', rate:'4.7 ・ 配達1,760回'},
+  {name:'アベ ショウ',    img:'gazo/man/file_1781070163376.jpeg', rate:'4.6 ・ 配達1,090回'},
+  {name:'ハシモト カイ',  img:'gazo/man/file_1781070165668.jpeg', rate:'4.9 ・ 配達4,330回'},
+  {name:'マツダ ハル',    img:'gazo/man/file_1781070419436.jpeg', rate:'4.8 ・ 配達2,510回'},
+  {name:'ハラ ソラ',      img:'gazo/man/file_1781070422492.jpeg', rate:'4.5 ・ 配達720回'},
+  {name:'ナカジマ ジン',  img:'gazo/man/file_1781070425495.jpeg', rate:'4.7 ・ 配達1,640回'},
+  {name:'イシイ ガク',    img:'gazo/man/file_1781070428123.jpeg', rate:'4.6 ・ 配達1,180回'},
+  {name:'ヤマザキ ツバサ',img:'gazo/man/file_1781070430703.jpeg', rate:'4.8 ・ 配達2,430回'},
+  {name:'オオタ ダン',    img:'gazo/man/file_1781070433356.jpeg', rate:'4.9 ・ 配達4,720回'},
+  {name:'フジワラ ゴウ',  img:'gazo/man/file_1781070435888.jpeg', rate:'4.7 ・ 配達1,950回'},
+
+  // --- 女性13人（gazo/wowan） ---
   {name:'スズキ ミサキ',  img:'gazo/wowan/file_1781070440132.jpeg', rate:'4.8 ・ 配達1,870回'},
-  {name:'サトウ リク',    img:'gazo/man/file_1781070145398.jpeg',   rate:'5.0 ・ 配達5,540回'},
   {name:'イトウ ハルカ',  img:'gazo/wowan/file_1781070443240.jpeg', rate:'4.7 ・ 配達980回'},
-  {name:'ヤマモト ダイチ',img:'gazo/man/file_1781070148569.jpeg',   rate:'4.9 ・ 配達4,110回'},
-  {name:'ナカムラ ソウタ',img:'gazo/man/file_1781070151250.jpeg',   rate:'4.6 ・ 配達1,240回'},
   {name:'コバヤシ アオイ',img:'gazo/wowan/file_1781070445751.jpeg', rate:'4.8 ・ 配達2,650回'},
-  {name:'ワタナベ ユウト',img:'gazo/man/file_1781070153413.jpeg',   rate:'4.9 ・ 配達3,980回'},
   {name:'タカハシ メイ',  img:'gazo/wowan/file_1781070452941.jpeg', rate:'5.0 ・ 配達6,210回'},
-  {name:'マツモト レン',  img:'gazo/man/file_1781070155990.jpeg',   rate:'4.5 ・ 配達640回'},
   {name:'イノウエ サクラ',img:'gazo/wowan/file_1781070455241.jpeg', rate:'4.7 ・ 配達1,520回'},
-  {name:'キムラ ハヤト',  img:'gazo/man/file_1781070158689.jpeg',   rate:'4.8 ・ 配達2,990回'},
   {name:'ハヤシ ナナ',    img:'gazo/wowan/file_1781070457889.jpeg', rate:'4.9 ・ 配達3,410回'},
-  {name:'シミズ タクミ',  img:'gazo/man/file_1781070160949.jpeg',   rate:'4.7 ・ 配達1,760回'},
   {name:'モリ ユイ',      img:'gazo/wowan/file_1781070460195.jpeg', rate:'4.8 ・ 配達2,140回'},
-  {name:'アベ ショウ',    img:'gazo/man/file_1781070163376.jpeg',   rate:'4.6 ・ 配達1,090回'},
   {name:'イケダ リン',    img:'gazo/wowan/file_1781070462859.jpeg', rate:'5.0 ・ 配達5,880回'},
-  {name:'ハシモト カイ',  img:'gazo/man/file_1781070165668.jpeg',   rate:'4.9 ・ 配達4,330回'},
   {name:'ヤマグチ ミオ',  img:'gazo/wowan/file_1781070465042.jpeg', rate:'4.7 ・ 配達1,320回'},
-  {name:'マツダ ハル',    img:'gazo/man/file_1781070419436.jpeg',   rate:'4.8 ・ 配達2,510回'},
   {name:'オカダ ノゾミ',  img:'gazo/wowan/file_1781070467287.jpeg', rate:'4.9 ・ 配達3,700回'},
-  {name:'ハラ ソラ',      img:'gazo/man/file_1781070422492.jpeg',   rate:'4.5 ・ 配達720回'},
   {name:'フジタ アカリ',  img:'gazo/wowan/file_1781070469668.jpeg', rate:'4.8 ・ 配達2,860回'},
-  {name:'ナカジマ ジン',  img:'gazo/man/file_1781070425495.jpeg',   rate:'4.7 ・ 配達1,640回'},
   {name:'コンドウ エマ',  img:'gazo/wowan/file_1781070472245.jpeg', rate:'5.0 ・ 配達6,050回'},
-  {name:'イシイ ガク',    img:'gazo/man/file_1781070428123.jpeg',   rate:'4.6 ・ 配達1,180回'},
-  {name:'サカモト ヒナ',  img:'gazo/wowan/file_1781070500761.jpeg', rate:'4.9 ・ 配達3,290回'},
-  {name:'ヤマザキ ツバサ',img:'gazo/man/file_1781070430703.jpeg',   rate:'4.8 ・ 配達2,430回'},
-  {name:'ムラカミ コハル',img:'gazo/man/file_1781070433356.jpeg',   rate:'4.7 ・ 配達1,510回'},
-  {name:'オオタ ダン',    img:'gazo/man/file_1781070435888.jpeg',   rate:'4.9 ・ 配達4,720回'}
+  {name:'サカモト ヒナ',  img:'gazo/wowan/file_1781070500761.jpeg', rate:'4.9 ・ 配達3,290回'}
 ];
 
 /* ========== JOMON（当たり配達員） ========== */
